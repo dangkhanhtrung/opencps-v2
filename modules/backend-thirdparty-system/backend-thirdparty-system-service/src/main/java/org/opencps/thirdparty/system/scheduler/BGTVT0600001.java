@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opencps.auth.utils.APIDateTimeUtils;
+import org.opencps.datamgt.utils.DateTimeUtils;
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.model.DossierAction;
 import org.opencps.dossiermgt.model.DossierFile;
@@ -26,6 +27,7 @@ import org.opencps.thirdparty.system.messagequeue.model.MessageQueueInputModel;
 import org.opencps.thirdparty.system.model.ThirdPartyDossierSync;
 import org.opencps.thirdparty.system.nsw.model.AttachedFile;
 import org.opencps.thirdparty.system.nsw.model.Envelope;
+import org.opencps.thirdparty.system.nsw.model.IssuingAuthority;
 import org.opencps.thirdparty.system.nsw.model.Transporter;
 import org.opencps.thirdparty.system.nsw.model.VLInterRoadTransportLicence;
 import org.opencps.thirdparty.system.util.OutsideSystemConverter;
@@ -128,6 +130,7 @@ public class BGTVT0600001 {
 
 		for (DossierFile dossierFile : dossierFileList) {
 			templateNo = dossierFile.getFileTemplateNo();
+			partNo = dossierFile.getDossierPartNo();
 
 			String returnDossierFiles = processAction.getReturnDossierFiles();
 			String[] returnDossierFilesArr = StringUtil.split(returnDossierFiles);
@@ -136,8 +139,8 @@ public class BGTVT0600001 {
 				if (templateNo.equals(returnDossierFile)) {
 					attachedFile = new AttachedFile();
 					attachedFile.setAttachedNote("");
-					attachedFile.setAttachedTypeCode(partNo);
-					attachedFile.setAttachedTypeName(templateNo);
+					attachedFile.setAttachedTypeCode(templateNo);
+					attachedFile.setAttachedTypeName(partNo);
 					attachedFile.setFullFileName(dossierFile.getDisplayName());
 
 					lstFiles.add(attachedFile);
@@ -174,15 +177,114 @@ public class BGTVT0600001 {
 					JSONObject formDataObj = JSONFactoryUtil
 							.createJSONObject(dossierFile.getFormData());
 					vlInterRoadTransportLicense.setLicenceNo(dossierFile.getDeliverableCode());
-					vlInterRoadTransportLicense.setFirstRegistrationDate(
-							formDataObj.getString("FirstRegistrationDate"));
-					vlInterRoadTransportLicense.setValidUntil(formDataObj.getString("ValidUntil"));
+					
+					if (formDataObj.has("FirstRegistrationDate")) {
+						String firstRegistrationDateStr = formDataObj.getString("FirstRegistrationDate");
+						Date firstRegistrationDate = DateTimeUtils.convertStringToDate(firstRegistrationDateStr);
+						
+						vlInterRoadTransportLicense.setFirstRegistrationDate(DateTimeUtils.convertDateToString(firstRegistrationDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+						
+					}
+					if (formDataObj.has("ValidUntil")) {
+						String validUntilStr = formDataObj.getString("ValidUntil");
+						Date validUntilDate = DateTimeUtils.convertStringToDate(validUntilStr);
+						
+						vlInterRoadTransportLicense.setValidUntil(DateTimeUtils.convertDateToString(validUntilDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+					}
+					else {
+						vlInterRoadTransportLicense.setValidUntil(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+					}
+					
 					transporter.setNameOfCompany(formDataObj.getString("NameOfCompany"));
 					transporter.setAddress(formDataObj.getString("Address"));
 					transporter.setTel(formDataObj.getString("Tel"));
 					transporter.setFax(formDataObj.getString("Fax"));
 					transporter.setEmail(formDataObj.getString("Email"));
 					transporter.setWebsite(formDataObj.getString("Website"));
+					StringBuilder transportOperation = new StringBuilder();
+					if (formDataObj.has("IsFixedRoadTransport")) {
+						if ("1".equals(formDataObj.getString("IsFixedRoadTransport"))) {
+							if (transportOperation.toString().isEmpty()) {
+								transportOperation.append("Vận tải hành khách bằng ô tô theo tuyến cố định");
+							}
+							else {
+								transportOperation.append(",Vận tải hành khách bằng ô tô theo tuyến cố định");
+							}
+						}
+					}
+					if (formDataObj.has("IsContractRoadTransport")) {
+						if ("1".equals(formDataObj.getString("IsContractRoadTransport"))) {
+							if (transportOperation.toString().isEmpty()) {
+								transportOperation.append("Vận tải hành khách theo hợp đồng");
+							}
+							else {
+								transportOperation.append(",Vận tải hành khách theo hợp đồng");
+							}
+						}
+					}
+					if (formDataObj.has("IsPassengerTransport")) {
+						if ("1".equals(formDataObj.getString("IsPassengerTransport"))) {
+							if (transportOperation.toString().isEmpty()) {
+								transportOperation.append("Vận tải khách du lịch bằng xe ô tô");
+							}
+							else {
+								transportOperation.append(",Vận tải khách du lịch bằng xe ô tô");
+							}
+						}
+					}
+					if (formDataObj.has("IsCargoTransport")) {
+						if ("1".equals(formDataObj.getString("IsCargoTransport"))) {
+							if (transportOperation.toString().isEmpty()) {
+								transportOperation.append("Vận tải hàng hóa bằng xe ô tô");
+							}
+							else {
+								transportOperation.append(",Vận tải hàng hóa bằng xe ô tô");
+							}
+						}
+					}
+					if (formDataObj.has("IsPassengerTaxi")) {
+						if ("1".equals(formDataObj.getString("IsPassengerTaxi"))) {
+							if (transportOperation.toString().isEmpty()) {
+								transportOperation.append("Vận tải hành khách bằng xe taxi");
+							}
+							else {
+								transportOperation.append(",Vận tải hành khách bằng xe taxi");
+							}
+						}
+					}
+					vlInterRoadTransportLicense.setTransportOperation(transportOperation.toString());
+					
+					IssuingAuthority issuingAuthority = new IssuingAuthority();
+					if (formDataObj.has("SignName")) {
+						issuingAuthority.setSignName(formDataObj.getString("SignName"));						
+					}
+					else {
+						issuingAuthority.setSignName("Nguyễn Tô An");						
+					}
+					if (formDataObj.has("SignDate")) {
+						String signDateStr = formDataObj.getString("SignDate");
+						Date signDate = DateTimeUtils.convertStringToDate(signDateStr);
+						
+						issuingAuthority.setSignDate(DateTimeUtils.convertDateToString(signDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+					}
+					else {
+						issuingAuthority.setSignDate(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+					}
+					if (formDataObj.has("SignPlace")) {
+						issuingAuthority.setSignPlace(formDataObj.getString("SignPlace"));						
+					}
+					else {
+						issuingAuthority.setSignPlace("Hà Nội");						
+					}
+					if (formDataObj.has("SignTitle")) {
+						issuingAuthority.setSignTitle(formDataObj.getString("SignTitle"));						
+					}
+					else {
+						issuingAuthority.setSignTitle("Cục trưởng");												
+					}
+					
+					vlInterRoadTransportLicense.setIssuingAuthority(issuingAuthority);
+					
 				}
 			}
 		}

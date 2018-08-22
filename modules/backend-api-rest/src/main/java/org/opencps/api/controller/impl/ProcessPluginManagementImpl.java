@@ -41,6 +41,7 @@ import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -372,7 +373,7 @@ public class ProcessPluginManagementImpl implements ProcessPluginManagement {
 						formReport = _getFormScript(formCode, dossier.getDossierId());
 					}
 
-					_log.info("Form data to preview: " + formData);
+					_log.info("Form data to preview: " + formData + ", auto run: " + autoRun);
 					Message message = new Message();
 
 					message.put("formReport", formReport);
@@ -451,6 +452,22 @@ public class ProcessPluginManagementImpl implements ProcessPluginManagement {
 
 	}
 
+	private boolean equalsFormData(String oldFormData, String newFormData) {
+		try {
+			JSONObject oldObj = JSONFactoryUtil.createJSONObject(oldFormData);
+			JSONObject newObj = JSONFactoryUtil.createJSONObject(newFormData);
+			if (oldObj.has("RegistrationNumber") && newObj.has("RegistrationNumber")) {
+				if (oldObj.getString("RegistrationNumber").equals(newObj.getString("RegistrationNumber"))) {
+					return true;
+				}
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	private String _getFormData(long groupId, String fileTemplateNo, long dossierId, boolean autoRun,
 			String dossierTemplateNo, boolean original, ServiceContext context) {
 
@@ -465,6 +482,8 @@ public class ProcessPluginManagementImpl implements ProcessPluginManagement {
 
 			DossierFile dossierFile = DossierFileLocalServiceUtil.getDossierFileByDID_FTNO_First(dossierId,
 					fileTemplateNo, false, new DossierFileComparator(false, "createDate", Date.class));
+			List<DossierFile> lstDossierFiles = DossierFileLocalServiceUtil.getDossierFileByDID_FTNO(dossierId,
+					fileTemplateNo, false);
 
 			List<DossierPart> lstParts = DossierPartLocalServiceUtil.getByTemplateNo(groupId, dossier.getDossierTemplateNo());
 			
@@ -611,6 +630,7 @@ public class ProcessPluginManagementImpl implements ProcessPluginManagement {
 										
 								JSONArray deliverablesArr = JSONFactoryUtil.createJSONArray(formDataObj.getString(deliverables));
 								JSONArray deliverableListArr = JSONFactoryUtil.createJSONArray();
+								_log.info("DELIVERABLE ARRAY: " + deliverablesArr);
 								
 								for (int i = 0; i < deliverablesArr.length(); i++) {
 
@@ -638,8 +658,17 @@ public class ProcessPluginManagementImpl implements ProcessPluginManagement {
 											}																	
 											
 											deliverableListArr.put(newFormDataObj);
+											boolean flag = false;
+											DossierFile foundFile = null;
+											for (DossierFile tmpFile : lstDossierFiles) {
+												if (equalsFormData(tmpFile.getFormData(), newFormDataObj.toJSONString())) {
+													flag = true;
+													foundFile = tmpFile;
+													break;
+												}
+											}
 											
-											if (Validator.isNull(dossierFile)) {
+											if (!flag) {
 
 												if (autoRun) {
 													// create DossierFile
@@ -649,6 +678,9 @@ public class ProcessPluginManagementImpl implements ProcessPluginManagement {
 															StringPool.BLANK, 0L, null, StringPool.BLANK, String.valueOf(false), context);
 
 													_log.info("UPDATED DOSSIERFILE");
+													if (Validator.isNotNull(dossierFile.getDeliverableCode())) {
+														newFormDataObj.put(deliverableCodeKey, dossierFile.getDeliverableCode());														
+													}
 
 													actions.updateDossierFileFormData(groupId, dossierId, dossierFile.getReferenceUid(), newFormDataObj.toJSONString(),
 															context);
@@ -659,6 +691,19 @@ public class ProcessPluginManagementImpl implements ProcessPluginManagement {
 												}
 
 											} else {
+												if (autoRun) {
+													_log.info("UPDATED DOSSIERFILE");
+													if (Validator.isNotNull(foundFile.getDeliverableCode())) {
+														newFormDataObj.put(deliverableCodeKey, foundFile.getDeliverableCode());														
+													}
+
+													actions.updateDossierFileFormData(groupId, dossierId, foundFile.getReferenceUid(), newFormDataObj.toJSONString(),
+															context);
+
+												} else {
+													// add temp File
+
+												}
 
 											}
 											

@@ -43,6 +43,7 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
@@ -942,6 +943,36 @@ public class UserManagementImpl implements UserManagement {
 
 			}
 
+		}
+	}
+
+	@Override
+	public Response getUserByEmail(HttpServletRequest request, HttpHeaders header, Company company, Locale locale,
+			User user, ServiceContext serviceContext, String email) {
+		UserModel userModel = new UserModel();
+		try {
+
+			long groupId = GetterUtil.getLong(header.getHeaderString("groupId"));
+
+			User userCustom = UserLocalServiceUtil.fetchUserByEmailAddress(serviceContext.getCompanyId(), email);
+
+			if (userCustom != null) {
+				userModel = UserUtils.mapperUserModel(userCustom, groupId);				
+			}
+			else {
+			}
+
+			return Response.status(200).entity(userModel).build();
+
+		} catch (Exception e) {
+			_log.error("/ @GET: " + e);
+			ErrorMsg error = new ErrorMsg();
+
+			error.setMessage("not found!");
+			error.setCode(404);
+			error.setDescription("not found!");
+
+			return Response.status(404).entity(error).build();
 		}
 	}
 

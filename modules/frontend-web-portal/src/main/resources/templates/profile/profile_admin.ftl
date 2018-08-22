@@ -12,7 +12,7 @@
 		<div class="col-sm-8 ">
 			<div class="row MB10 MT20">	
 				<div class="col-sm-4 PT5">
-					<span>Tên đăng kiểm viên </span> <span class="red">(*)</span>
+					<span>Tên cán bộ xử lý </span> <span class="red">(*)</span>
 				</div>
 				<div class="col-sm-8">
 					<input class="form-control input-sm" id="fullnameEmployee" name="fullnameEmployee" value="${(employee.fullName)!}">
@@ -39,7 +39,7 @@
 
 			<div class="row MB10">
 				<div class="col-sm-4 PT5">
-					<span>Contact code </span> <span class="red">(*)</span>
+					<span>Mã cán bộ </span> <span class="red">(*)</span>
 				</div>
 				<div class="col-sm-8">
 					<input class="form-control input-sm" value="${(employee.employeeNo)!}">
@@ -48,21 +48,21 @@
 
 			<div class="row MB10">
 				<div class="col-sm-4 PT5">
-					<span>Địa điểm ký số </span> <span class="red">(*)</span>
+					<span>Tên tài khoản đăng nhập </span> <span class="red">(*)</span>
 				</div>
 				<div class="col-sm-8">
-					<input class="form-control input-sm" value="Hà Nội">
+					<input class="form-control input-sm" value="${(screenName)!}">
 				</div>
 			</div>
 
-			<div class="row MB10">
+			<#-- <div class="row MB10">
 				<div class="col-sm-4 PT5">
 					<span>Chức danh ký số </span> <span class="red">(*)</span>
 				</div>
 				<div class="col-sm-8">
 					<input class="form-control input-sm" id="title" name="title" value="${(employee.title)!}" >
 				</div>
-			</div>
+			</div> -->
 
 			<#-- <div class="row MB10">
 				<div class="col-sm-4">
@@ -100,14 +100,14 @@
 				</div>
 			</div> -->
 
-			<div class="row MB10">
+			<#-- <div class="row MB10">
 				<div class="col-sm-4 PT5">
 					<span>Tài khoản đăng nhập </span> 
 				</div>
 				<div class="col-sm-8">
 					<input class="form-control input-sm" value="${(employee.email)!}">
 				</div>
-			</div>
+			</div> -->
 
 			<div class="row MB15 MT20">
 				<div class="col-sm-4 PT5">
@@ -119,7 +119,7 @@
 					<input type="file" id="fileRoot" name="fileRoot">
 				</div>
 				<div class="col-sm-4">
-					 <img id="previewRegis" class="img-rounded" src="#" alt="" style="width: 100%; height: 122px;" />
+					<img id="previewRegis" class="img-rounded" src="#" alt="" style="width: 100%; height: 122px;" />
 				</div>
 			</div>
 

@@ -74,7 +74,7 @@ public class FrontendWebDossierPortlet extends FreeMarkerPortlet {
 			for (EmployeeJobPos ejp : lstEmJobPos) {
 				WorkingUnit wu = WorkingUnitLocalServiceUtil.fetchWorkingUnit(ejp.getWorkingUnitId());
 				if (wu != null) {
-					if (agencies.equals("")) {
+					if (agencies.toString().isEmpty()) {
 						agencies.append(wu.getGovAgencyCode());
 					}
 					else {

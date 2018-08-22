@@ -1,4 +1,4 @@
-	<v-slide-x-transition>
+	<#-- <v-slide-x-transition>
 
 		<div class="row-header flex-break" v-if="!detailPage">
 
@@ -16,7 +16,7 @@
 
 		</div>
 
-	</v-slide-x-transition>
+	</v-slide-x-transition> -->
 
 	<v-slide-x-transition>
 

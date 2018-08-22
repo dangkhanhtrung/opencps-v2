@@ -13,6 +13,7 @@
 			<div class="background-triangle-big">Tên thủ tục</div> 
 			<span class="text-bold" data-bind="text:serviceName"></span>
 			<div class="pull-right group-icons">
+				<#if dossier.dossierStatus?has_content && dossier.dossierStatus == "new" && dossier.submitting?has_content && dossier.submitting != true >
 				<a href="javascript:;" id="btn-submit-dossier-header" style="display: none;">
 					<i class="fa fa-paper-plane" aria-hidden="true"></i> 
 					Nộp hồ sơ
@@ -21,6 +22,7 @@
 					<i class="fa fa-trash"></i>
 					Xóa
 				</a>
+				</#if>
 			</div>
 		</div>
 
@@ -61,7 +63,7 @@
 
 							<div class="row MT5">
 								<div class="col-sm-2">
-									<label>Họ và tên</label>
+									<label>Họ và tên<span style="color: red;"> * </span></label>
 								</div>
 								<div class="col-sm-10">
 									<span id="contactName" data-pk="1" data-type="text" data-toggle="#editContactName" data-original-title="Nhập họ và tên" tabindex="-1" class="" data-bind="text:contactName" required></span>
@@ -73,7 +75,7 @@
 
 							<div class="row">
 								<div class="col-sm-2">
-									<label>Địa chỉ</label>
+									<label>Địa chỉ<span style="color: red;"> * </span></label>
 								</div>
 								<div class="col-sm-10">
 									<span id="address" data-pk="1" data-type="text" data-toggle="#editAddress" data-original-title="Nhập địa chỉ" tabindex="-1" class="" data-bind="text:address" required></span>
@@ -85,7 +87,7 @@
 
 							<div class="row">
 								<div class="col-sm-2">
-									<label>Tỉnh/ Thành phố</label>
+									<label>Tỉnh/ Thành phố<span style="color: red;"> * </span></label>
 								</div>
 								<div class="col-sm-10">
 									<span id="city" data-pk="1" data-type="select" data-toggle="#editCity" data-original-title="Chọn tỉnh/ thành phố" tabindex="-1" class="" data-bind="text:cityName" required><#-- ${api.applicant.cityName} --></span>
@@ -96,7 +98,7 @@
 							</div>
 							<div class="row">
 								<div class="col-sm-2">
-									<label>Quận/ Huyện</label>
+									<label>Quận/ Huyện<span style="color: red;"> * </span></label>
 								</div>
 								<div class="col-sm-10">
 									<span id="district" data-pk="1" data-type="select" data-toggle="#editDistrict" data-original-title="Chọn quận/ huyện" tabindex="-1" class="" data-bind="text:districtName" required><#-- ${api.applicant.districtName} --></span>
@@ -107,7 +109,7 @@
 							</div>
 							<div class="row">
 								<div class="col-sm-2">
-									<label>Xã/ Phường</label>
+									<label>Xã/ Phường<span style="color: red;"> * </span></label>
 								</div>
 								<div class="col-sm-10">
 									<span id="wards" data-pk="1" data-type="select" data-toggle="#editWards" data-original-title="Chọn xã/ phường" tabindex="-1" class="" data-bind="text:wardName" required><#-- ${api.applicant.wardName} --></span>
@@ -119,7 +121,7 @@
 
 							<div class="row">
 								<div class="col-sm-2">
-									<label>Điện thoại</label>
+									<label>Điện thoại<span style="color: red;"> * </span></label>
 								</div>
 								<div class="col-sm-10">
 									<span id="contactTelNo" data-pk="1" data-type="text" data-toggle="#editContactTelNo" data-original-title="Nhập số điện thoại" tabindex="-1" class="" data-bind="text:contactTelNo" required></span>
@@ -161,32 +163,49 @@
 							<input type="hidden" id="validPart#:id#" name="validPart#:id#" class="validPart" value="0">
 							#}#
 						</span>
+						
+						#
+						var lockState = fnCheckLockTemplate("${dossier.lockState}",id);
+						#
 
 						<div class="actions">
-
+							
+							#if(!lockState){#	
 							<a href="javascript:;" class="text-light-blue uploadfile-form-repository" data-toggle="tooltip" data-placement="top" title="Tải giấy tờ từ kho lưu trữ" part-no="#:id#">
 								<i class="fa fa-archive" aria-hidden="true"></i>
 							</a>
+							#}#
 
+							#if(!lockState){#
 							<label class="MB0 ML10 hover-pointer" for="file#:id#" title="Tải file lên" >
 								<i class="fa fa-upload text-light-blue"></i>
 							</label>
+							#}#
 
 							<input type='file' id="file#:id#" name="file#:id#" class="hidden dossier-file" #if(multiple){# multiple #}# part-no="#:id#" file-template-no="#:fileTemplateNo#">
 
 							<a href="javascript:;" class="dossier-component-profile" data-toggle="tooltip" data-placement="top" title="Số tệp tin" data-partno="#:id#" data-number="#if(hasForm){# 1 #}else {# 0 #}#">
 								<span class="number-in-circle" >#if(hasForm){# 1 #}else {# 0 #}#</span>
 							</a>
-
+							
+							#if(!lockState){#
 							<a href="javascript:;" class="text-light-gray delete-dossier-file" data-toggle="tooltip" data-placement="top" title="Xóa" data-partno="#:id#" eForm="#:hasForm#" fileTemplateNo="#:fileTemplateNo#">
 								<i class="fa fa-trash-o" aria-hidden="true"></i> Xóa
 							</a>
+							#}#
 						</div>
 					</div>
 
-					#if(hasForm){
-					var dossierFile =  getReferentUidFile(${dossierId},id);
 					#
+						if(hasForm){
+					var dossierFile =  getReferentUidFile(${dossierId},id);
+						var hiddenState = "";
+
+						if(lockState){
+							hiddenState = "pointer-events:none;";
+						}
+					#
+
 					<div class="row">
 						<div class="col-xs-12 col-sm-12 text-right">
 							<button id="btn-save-formalpaca#:id#" class="btn btn-active MB10 MT10 MR20 saveForm saveFormAlpaca" 
@@ -196,7 +215,7 @@
 					</div>
 
 					<div class="col-sm-12" #if(dossierFile.referenceUid){# style="height:450px; width:100%;overflow:auto;" #}#>
-						<form id="formPartNo#:id#">
+						<form id="formPartNo#:id#" style="#:hiddenState#">
 
 						</form>
 					</div>
@@ -217,20 +236,20 @@
 				}
 				alpaca.data = formdata;
 
+							setTimeout(function(){
 				$("\\#formPartNo"+id).alpaca(alpaca);
-
-				<#-- $("\\#formPartNo"+id).append('<div class="row"><div class="col-xs-12 col-sm-12 "><button id="btn-save-formalpaca'+id+'" class="btn btn-active MB10 MT10 saveForm" type="button" data-pk="'+id+'" referentUid="'+referentUidFile+'">Ghi lại</button></div></div>'); -->
+							},1000)
 
 			},
 			error : function(result){
 
 		}
 	});
-}#
+				}#
 
-#}#
-</script>
-</div>
+			#}#
+		</script>
+	</div>
 </div>
 
 <div class="row-parts-content">
@@ -292,7 +311,7 @@
 			<label>Ghi chú</label>
 		</div>
 		<div class="col-sm-11">
-			<span id="applicantNote" data-pk="1" data-type="textarea" data-toggle="#editApplicantNote" data-original-title="Ghi chú" tabindex="-1" class="" data-bind="text:applicantNote"></span>
+			<span id="applicantNote" data-pk="1" data-type="textarea" data-toggle="#editApplicantNote" data-original-title="Ghi chú" tabindex="-1" class="" data-bind="text:lastActionNote"></span>
 			<span class="pull-right">
 				<a href="javascript:;" id="editApplicantNote" style="float: right"><i class="fa fa-pencil"></i></a>
 			</span>
@@ -301,7 +320,6 @@
 	</div>
 </div>
 </div>
-
 <div class="button-row MT20">
 	<#if resCancelling?has_content >
 
@@ -311,7 +329,7 @@
 
 	<button class="btn btn-active" id="btn-submit-dossier" ><i class="fa fa-paper-plane"></i> Nộp hồ sơ</button>
 
-	<#else>
+	<#elseif dossier.dossierStatus?has_content && dossier.dossierStatus == "new" &&            	dossier.submitting?has_content && dossier.submitting != true>
 
 	<button class="btn btn-active" id="btn-submit-dossier" data-bind="value : lockState" style="display: none;"><i class="fa fa-paper-plane"></i> Nộp hồ sơ</button>
 	
@@ -346,6 +364,7 @@
 					valid = false;
 				}
 			});
+
 
 		}catch(e){
 			valid = false;
@@ -643,6 +662,19 @@
 				return ;
 			}
 
+			var valDistrict = $('#district').html();
+			var valWards = $('#wards').html();
+			var check = true;
+			if(valDistrict === "-" || valWards === "-"){
+				check = false;
+			}
+			if(!check){
+				notification.show({
+					message: "Vui lòng kiểm tra lại các thông tin bắt buộc của các thông tin chủ hồ sơ!"
+				}, "error");
+
+				return ;
+			}
 			console.log(validatePostal);
 			console.log(validateAplicantInfo);
 
@@ -734,7 +766,7 @@
 				};
 			},
 			validate: function(value) {
-				if (value.length < 1){
+				if (value.length < 2){
 					return 'Đây là trường bắt buộc';
 				}
 			},
@@ -764,7 +796,7 @@
 				};
 			},
 			validate: function(value) {
-				if (value.length < 1){
+				if (value.length < 2){
 					return 'Đây là trường bắt buộc';
 				}
 			},
@@ -794,7 +826,7 @@
 				};
 			},
 			validate: function(value) {
-				if (value.length < 1){
+				if (value.length < 2){
 					return 'Đây là trường bắt buộc';
 				}
 			},
@@ -886,7 +918,7 @@
 				};
 			},
 			validate: function(value) {
-				if (value.length < 1 && value !== '-'){
+				if (value.length < 2  && value !== "-"){
 					return 'Đây là trường bắt buộc';
 				}
 			},
@@ -974,7 +1006,7 @@
 				};
 			},
 			validate: function(value) {
-				if (value.length < 1){
+				if (value.length < 2 && value !== "-"){
 					return 'Đây là trường bắt buộc';
 				}
 			},
@@ -1294,12 +1326,12 @@
 
 								return "";
 							},
-							applicantNote : function(){
-								$('#applicantNote').editable("setValue",result.applicantNote);
-								if(!result.applicantNote){
-									return "Ghi chú người dùng";
-								}
-								return result.applicantNote;
+							lastActionNote : function(){
+								$('#applicantNote').editable("setValue",result.lastActionNote);
+								// if(!result.applicantNote){
+								// 	return "Ghi chú người dùng";
+								// }
+								return result.lastActionNote;
 							},
 							viaPostal : function(e){
 								console.log(result.viaPostal);
@@ -1591,22 +1623,11 @@
 			return value;
 		}
 
-		$(function(){
-			manageDossier.route("/taohosomoi/nopthanhcong/(:dossierId)", function(dossierId){
-				$("#mainType1").hide();
-				$("#mainType2").show();
-				$("#mainType2").load("${ajax.submited_dossier_info}&${portletNamespace}dossierId="+dossierId,function(result){
-
-				});
-			});
-		});
-
 		window.onload = function(){
 			if($("#textDossierNote").text().length < 550){
 				$("#guide-toggle").remove();
 			}
 		}
-
 		var fnSaveForm = function(id, value){
 			var current = $("#btn-save-formalpaca"+id);
 			var referentUid = current.attr("referenceUid");
@@ -1696,6 +1717,7 @@
 				}
 			}
 		});
+
 
 		$("#guide-toggle").click(function(event){
 			event.preventDefault();

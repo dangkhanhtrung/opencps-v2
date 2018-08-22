@@ -31,11 +31,13 @@ import org.opencps.api.controller.impl.DossierTemplateManagementImpl;
 import org.opencps.api.controller.impl.EmployeeManagementImpl;
 import org.opencps.api.controller.impl.FileAttachManagementImpl;
 import org.opencps.api.controller.impl.HolidayManagementImpl;
+import org.opencps.api.controller.impl.HotfixManagementImpl;
 import org.opencps.api.controller.impl.JobposManagementImpl;
 import org.opencps.api.controller.impl.NotificationQueueManagementImpl;
 import org.opencps.api.controller.impl.NotificationTemplateImpl;
 import org.opencps.api.controller.impl.NotificationTypeManagementImpl;
 import org.opencps.api.controller.impl.OfficeSiteManagementImpl;
+import org.opencps.api.controller.impl.OneGateControllerImpl;
 import org.opencps.api.controller.impl.PaymentConfigManagementImpl;
 import org.opencps.api.controller.impl.PaymentFileManagementImpl;
 import org.opencps.api.controller.impl.ProcessPluginManagementImpl;
@@ -110,6 +112,9 @@ public class BackendAPIRestApplication extends Application {
 		singletons.add(new UserInfoLogManagementImpl());
 		//
 		singletons.add(new CertNumberManagementImpl());
+		singletons.add(new OneGateControllerImpl());
+		
+		singletons.add(new HotfixManagementImpl());
 		
 		// add service provider
 		singletons.add(_serviceContextProvider);

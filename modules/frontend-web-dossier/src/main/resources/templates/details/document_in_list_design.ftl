@@ -1,14 +1,18 @@
 <div id="list_document_in_template" class="hidden">
 	<v-layout wrap class="px-4 align-center-flex row-list-style"> 
-		<v-flex xs11>
-			<span class="text-bold" style="position: absolute;">{{index + 1}}.</span> 
-			<div style="margin-left: 30px;"><span @click.prevent="viewOnNewTab(item)" style="cursor: pointer;">{{item.partName}}</span></div>
+		<v-flex xs12 class="mb-2">
+			<span class="text-bold" style="position: absolute;">
+				<v-icon v-if="item.counter > 0" style="font-size: 10px;" color="blue">fiber_manual_record</v-icon>
+				<v-icon v-else style="font-size: 10px;">fiber_manual_record</v-icon> &nbsp;&nbsp;
+				{{index + 1}}.
+			</span> 
+			<div style="margin-left: 40px;"><span @click="viewDossierFileVersionDialog(item)" style="cursor: pointer;">{{item.partName}}</span></div>
 		</v-flex>
-		<v-flex xs1 class="text-right">
+		<#-- <v-flex xs1 class="text-right">
 		<v-btn color="primary" fab small dark class="small-btn-x" v-on:click.native="viewDossierFileVersionNewTabOrWindow(item)">
 			{{item.counter}}
 		</v-btn>
-		</v-flex>
+		</v-flex> -->
 	</v-layout>
 </div>
 

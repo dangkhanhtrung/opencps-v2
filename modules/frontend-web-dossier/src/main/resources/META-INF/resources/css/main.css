@@ -128,3 +128,24 @@ body .navigation-drawer  .list--group__header--active {
     height: 10px;
 }
 
+aside.navigation-drawer, .application .theme--light.navigation-drawer {
+  display: none !important;
+}
+
+.carousel__right {
+  display: none !important;
+}
+
+#carouselFiles:hover .carousel__right {
+  display: block !important;
+  color: #635d5d !important;
+}
+
+.carousel__left {
+  display: none !important;
+}
+
+#carouselFiles:hover .carousel__left {
+  display: block !important;
+  color: #635d5d !important;
+}

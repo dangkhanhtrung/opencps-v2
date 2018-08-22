@@ -45,6 +45,7 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 @ApplicationPath("/v2/inland")
 @Component(immediate = true, service = Application.class)
@@ -70,7 +71,8 @@ public class BackendInlandApiRestApplication extends Application {
 			@Context ServiceContext serviceContext, @QueryParam("serviceCode") String serviceCode,
 			@QueryParam("dossierPartNo") String dossierPartNo,
 			@QueryParam("fileTemplateNo") String fileTemplateNo,
-			@QueryParam("templateNo") String templateNo) {
+			@QueryParam("templateNo") String templateNo,
+			@QueryParam("licenceType") String licenceType) {
 		
 		BackendAuth auth = new BackendAuthImpl();
 
@@ -83,7 +85,12 @@ public class BackendInlandApiRestApplication extends Application {
 			
 			InlandPrintTemplate printTemplate = null;
 			try {
-				printTemplate = InlandPrintTemplateLocalServiceUtil.findBySC_TN_PN_FTN(user.getUserId(), serviceCode, templateNo, dossierPartNo, fileTemplateNo);
+				if (Validator.isNull(licenceType)) {
+					printTemplate = InlandPrintTemplateLocalServiceUtil.findBySC_TN_PN_FTN(user.getUserId(), serviceCode, templateNo, dossierPartNo, fileTemplateNo);					
+				}
+				else {
+					printTemplate = InlandPrintTemplateLocalServiceUtil.findBySC_TN_PN_FTN_LT(user.getUserId(), serviceCode, templateNo, dossierPartNo, fileTemplateNo, licenceType);					
+				}
 			}
 			catch (NoSuchInlandPrintTemplateException e) {
 				
@@ -98,11 +105,19 @@ public class BackendInlandApiRestApplication extends Application {
 				result.setFileTemplateNo(fileTemplateNo);
 				result.setTemplateNo(templateNo);
 				result.setFormTemplate(printTemplate.getFormTemplate());
+				result.setDefaultCss(printTemplate.getDefaultCss());
 				result.setOriginalDocumentURL(printTemplate.getOriginalDocumentURL());
+				result.setLicenceType(printTemplate.getLicenceType());
 			}
 			else {
 				try {
-					printTemplate = InlandPrintTemplateLocalServiceUtil.findBySC_TN_PN_FTN(0, serviceCode, templateNo, dossierPartNo, fileTemplateNo);					
+					if (Validator.isNull(licenceType)) {
+						printTemplate = InlandPrintTemplateLocalServiceUtil.findBySC_TN_PN_FTN(0, serviceCode, templateNo, dossierPartNo, fileTemplateNo);					
+				
+					}
+					else {
+						printTemplate = InlandPrintTemplateLocalServiceUtil.findBySC_TN_PN_FTN_LT(0, serviceCode, templateNo, dossierPartNo, fileTemplateNo, licenceType);											
+					}
 				}
 				catch (NoSuchInlandPrintTemplateException e) {
 					
@@ -116,7 +131,9 @@ public class BackendInlandApiRestApplication extends Application {
 					result.setFileTemplateNo(fileTemplateNo);
 					result.setTemplateNo(templateNo);
 					result.setFormTemplate(printTemplate.getFormTemplate());
+					result.setDefaultCss(printTemplate.getDefaultCss());
 					result.setOriginalDocumentURL(printTemplate.getOriginalDocumentURL());
+					result.setLicenceType(printTemplate.getLicenceType());
 				}				
 			}
 			
@@ -147,7 +164,7 @@ public class BackendInlandApiRestApplication extends Application {
 			if (!auth.isAuth(serviceContext)) {
 				throw new UnauthenticationException();
 			}
-			InlandPrintTemplate inlandPrintTemplate = InlandPrintTemplateLocalServiceUtil.addInlandPrintTemplate(groupId, user.getUserId(), user.getUserId(), 0, input.getServiceCode(), input.getDossierPartNo(), input.getFileTemplateNo(), input.getTemplateNo(), input.getFormTemplate(), input.getOriginalDocumentURL());
+			InlandPrintTemplate inlandPrintTemplate = InlandPrintTemplateLocalServiceUtil.addInlandPrintTemplate(groupId, user.getUserId(), user.getUserId(), 0, input.getServiceCode(), input.getDossierPartNo(), input.getFileTemplateNo(), input.getTemplateNo(), input.getFormTemplate(), input.getDefaultCss(), input.getOriginalDocumentURL(), input.getLicenceType());
 			
 
 			InlandPrintTemplateModel result = new InlandPrintTemplateModel();
@@ -155,12 +172,14 @@ public class BackendInlandApiRestApplication extends Application {
 			if (inlandPrintTemplate != null) {
 				result.setPrintTemplateId(inlandPrintTemplate.getPrintTemplateId());
 				result.setFormTemplate(inlandPrintTemplate.getFormTemplate());
+				result.setDefaultCss(inlandPrintTemplate.getDefaultCss());
 				result.setOriginalDocumentURL(inlandPrintTemplate.getOriginalDocumentURL());
 				result.setDossierPartNo(inlandPrintTemplate.getDossierPartNo());
 				result.setEmployeeId(inlandPrintTemplate.getEmployeeId());
 				result.setFileTemplateNo(inlandPrintTemplate.getFileTemplateNo());
 				result.setServiceCode(inlandPrintTemplate.getServiceCode());
 				result.setTemplateNo(inlandPrintTemplate.getTemplateNo());
+				result.setLicenceType(inlandPrintTemplate.getLicenceType());
 				result.setCreateUserId(user.getUserId());
 			}
 			return Response.status(200).entity(result).build();
@@ -223,19 +242,23 @@ public class BackendInlandApiRestApplication extends Application {
 					input.getFileTemplateNo(), 
 					input.getTemplateNo(), 
 					input.getFormTemplate(), 
-					input.getOriginalDocumentURL());
+					input.getDefaultCss(),
+					input.getOriginalDocumentURL(),
+					input.getLicenceType());
 			
 			InlandPrintTemplateModel result = new InlandPrintTemplateModel();
 
 			if (inlandPrintTemplate != null) {
 				result.setPrintTemplateId(inlandPrintTemplate.getPrintTemplateId());
 				result.setFormTemplate(inlandPrintTemplate.getFormTemplate());
+				result.setDefaultCss(inlandPrintTemplate.getDefaultCss());
 				result.setOriginalDocumentURL(inlandPrintTemplate.getOriginalDocumentURL());
 				result.setDossierPartNo(inlandPrintTemplate.getDossierPartNo());
 				result.setEmployeeId(inlandPrintTemplate.getEmployeeId());
 				result.setFileTemplateNo(inlandPrintTemplate.getFileTemplateNo());
 				result.setServiceCode(inlandPrintTemplate.getServiceCode());
 				result.setTemplateNo(inlandPrintTemplate.getTemplateNo());
+				result.setLicenceType(inlandPrintTemplate.getLicenceType());
 			}
 			return Response.status(200).entity(result).build();
 

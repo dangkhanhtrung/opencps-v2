@@ -31,7 +31,9 @@
 		<column name="fileTemplateNo" type="String" />
 		<column name="templateNo" type="String" />
 		<column name="formTemplate" type="String" />
+		<column name="defaultCss" type="String" />		
 		<column name="originalDocumentURL" type="String" />
+		<column name="licenceType" type="String" />
 
 		<!-- Order -->
 
@@ -44,6 +46,15 @@
             <finder-column name="templateNo"></finder-column>
             <finder-column name="dossierPartNo"></finder-column>
             <finder-column name="fileTemplateNo"></finder-column>
+        </finder>
+
+        <finder name="SC_TN_PN_FTN_LT" return-type="InlandPrintTemplate">
+            <finder-column name="createUserId"></finder-column>
+            <finder-column name="serviceCode"></finder-column>
+            <finder-column name="templateNo"></finder-column>
+            <finder-column name="dossierPartNo"></finder-column>
+            <finder-column name="fileTemplateNo"></finder-column>
+            <finder-column name="licenceType"></finder-column>
         </finder>
 
 	</entity>

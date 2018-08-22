@@ -114,6 +114,7 @@ public class BGTVT0600044 {
 
 		for (DossierFile dossierFile : dossierFileList) {
 			templateNo = dossierFile.getFileTemplateNo();
+			partNo = dossierFile.getDossierPartNo();
 
 			String returnDossierFiles = processAction.getReturnDossierFiles();
 			String[] returnDossierFilesArr = StringUtil.split(returnDossierFiles);

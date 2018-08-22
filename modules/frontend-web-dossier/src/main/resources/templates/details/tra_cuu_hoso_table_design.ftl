@@ -2,7 +2,7 @@
 <div id="tra_cuu_hoso_table_template" class="hidden">
 	<template slot="items" slot-scope="props">
 
-		<td style="padding-top: 3px;"> <v-checkbox primary hide-details v-model="props.selected" ></v-checkbox> </td>
+		<td style="padding-top: 3px; width: 5%;"> <v-checkbox primary hide-details v-model="props.selected" ></v-checkbox> </td>
 		<td style="padding: 8px; padding-left: 0px;" class="text-xs-center">{{ traCuuHoSoTablepage * 15 - 15 + props.index + 1 }}</td>
 		<td style="padding: 8px;" class="text-xs-left">
 			<a href="javascript:;" @click.prevent.stop="toDetailHoSoDelivable(props.item)">
@@ -39,8 +39,10 @@
 			{{ props.item.ten_doanh_nghiep }} 
 		</td>
 		<td style="padding: 8px; width: 8%;" class="text-xs-center"><!-- {{ props.item.lastActionNote }} -->
-			 <v-btn v-on:click.native="toViewDelivableFile(props.item)" flat class="mx-0 my-0 pl-0 pr-0" color="grey darken-1">Xem CC <v-icon>forward</v-icon></v-btn> 
-
+			 <#-- <v-btn v-on:click.native="toViewDelivableFile(props.item)" flat class="mx-0 my-0 pl-0 pr-0" color="grey darken-1">Xem CC <v-icon>forward</v-icon></v-btn>  -->
+			 <v-btn class="ml-0 mr-0 btn__info" flat icon style="color: #14BEF0;" @click="toViewDelivableFile(props.item)">
+			 	<v-icon >visibility</v-icon>
+			 </v-btn> 
 		</td>
 	</template>
 </div>

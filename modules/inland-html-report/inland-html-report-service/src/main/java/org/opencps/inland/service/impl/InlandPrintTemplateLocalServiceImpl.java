@@ -55,7 +55,9 @@ public class InlandPrintTemplateLocalServiceImpl
 			String fileTemplateNo,
 			String templateNo,
 			String formTemplate,
-			String originalDocumentURL
+			String defaultCss,
+			String originalDocumentURL,
+			String licenceType
 			) {
 		long printTemplateId = counterLocalService.increment(InlandPrintTemplate.class.getName());
 		Date now = new Date();
@@ -71,7 +73,9 @@ public class InlandPrintTemplateLocalServiceImpl
 		inlandPrintTemplate.setDossierPartNo(dossierPartNo);
 		inlandPrintTemplate.setFileTemplateNo(fileTemplateNo);
 		inlandPrintTemplate.setFormTemplate(formTemplate);
+		inlandPrintTemplate.setDefaultCss(defaultCss);
 		inlandPrintTemplate.setOriginalDocumentURL(originalDocumentURL);
+		inlandPrintTemplate.setLicenceType(licenceType);
 		
 		return inlandPrintTemplatePersistence.update(inlandPrintTemplate);
 	}
@@ -87,7 +91,9 @@ public class InlandPrintTemplateLocalServiceImpl
 			String fileTemplateNo,
 			String templateNo,
 			String formTemplate,
-			String originalDocumentURL
+			String defaultCss,
+			String originalDocumentURL,
+			String licenceType
 			) throws NoSuchInlandPrintTemplateException {
 		Date now = new Date();
 		InlandPrintTemplate inlandPrintTemplate = inlandPrintTemplatePersistence.findByPrimaryKey(printTemplateId);
@@ -102,7 +108,9 @@ public class InlandPrintTemplateLocalServiceImpl
 		inlandPrintTemplate.setDossierPartNo(dossierPartNo);
 		inlandPrintTemplate.setFileTemplateNo(fileTemplateNo);
 		inlandPrintTemplate.setFormTemplate(formTemplate);
+		inlandPrintTemplate.setDefaultCss(defaultCss);
 		inlandPrintTemplate.setOriginalDocumentURL(originalDocumentURL);
+		inlandPrintTemplate.setLicenceType(licenceType);
 		
 		return inlandPrintTemplatePersistence.update(inlandPrintTemplate);
 	}	
@@ -113,5 +121,9 @@ public class InlandPrintTemplateLocalServiceImpl
 	
 	public InlandPrintTemplate findBySC_TN_PN_FTN(long createUserId, String serviceCode, String templateNo, String dossierPartNo, String fileTemplateNo) throws NoSuchInlandPrintTemplateException {
 		return inlandPrintTemplatePersistence.findBySC_TN_PN_FTN(createUserId, serviceCode, templateNo, dossierPartNo, fileTemplateNo);
+	}
+
+	public InlandPrintTemplate findBySC_TN_PN_FTN_LT(long createUserId, String serviceCode, String templateNo, String dossierPartNo, String fileTemplateNo, String licenceType) throws NoSuchInlandPrintTemplateException {
+		return inlandPrintTemplatePersistence.findBySC_TN_PN_FTN_LT(createUserId, serviceCode, templateNo, dossierPartNo, fileTemplateNo, licenceType);
 	}
 }

@@ -1,4 +1,4 @@
-<div id="popUpThongTinXeTemplate">
+<#-- <div id="popUpThongTinXeTemplate">
   <v-flex xs12 sm12 class="pl-5">
     <p>Số đăng ký phương tiện : {{modelLienVan.registrationNumber}}</p>
   </v-flex>
@@ -101,6 +101,5 @@
   	<div class="text-xs-center">
   		<v-pagination :length="lengthPageHistory" v-model="pageHistory"></v-pagination>
   	</div>
-  </v-data-table>
   </v-flex>
-</div>
+</div> -->

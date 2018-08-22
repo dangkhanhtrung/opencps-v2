@@ -55,7 +55,7 @@
 						<div class="row MT5">
 							
 							<div class="col-sm-2 PT5 text-right">
-								Họ và tên
+								Họ và tên<span style="color: red;"> * </span>
 							</div>
 							<div class="col-sm-10">
 								<div class="form-group"> 
@@ -66,16 +66,16 @@
 							</div>
 
 							<div class="col-sm-2 PT5 text-right">
-								Địa chỉ
+								Địa chỉ<span style="color: red;"> * </span>
 							</div>
 							<div class="col-sm-10">
 								<div class="form-group"> 
-									<input type="text" class="form-control" data-bind="value: address" id="address" name="address"> 
+									<input type="text" class="form-control" data-bind="value: address" id="address" name="address" required="required" validationMessage="Bạn phải điền địa chỉ"> 
 								</div>
 							</div>
 
 							<div class="col-sm-2 PT5 text-right">
-								Tỉnh/ Thành phố
+								Tỉnh/ Thành phố<span style="color: red;"> * </span>
 							</div>
 							<div class="col-sm-2 PR0">
 								<div class="form-group"> 
@@ -86,7 +86,7 @@
 							</div>
 
 							<div class="col-sm-2 PT5 text-right">
-								Quận/ Huyện
+								Quận/ Huyện<span style="color: red;"> * </span>
 							</div>
 							<div class="col-sm-2 PR0">
 								<div class="form-group"> 
@@ -97,7 +97,7 @@
 							</div>
 							
 							<div class="col-sm-2 PT5 text-right">
-								Xã/ Phường
+								Xã/ Phường<span style="color: red;"> * </span>
 							</div>
 							<div class="col-sm-2 PL0">
 								<div class="form-group"> 
@@ -108,7 +108,7 @@
 							</div>
 
 							<div class="col-sm-2 PT5 text-right">
-								Điện thoại
+								Điện thoại<span style="color: red;"> * </span>
 							</div>
 							<div class="col-sm-2 PR0">
 								<div class="form-group"> 
@@ -122,7 +122,7 @@
 							</div>
 							<div class="col-sm-6">
 								<div class="form-group"> 
-									<input type="text" class="form-control" id="contactEmail" name="contactEmail" data-bind="value : contactEmail" required="required" validationMessage="Bạn phải điền email">
+									<input type="text" class="form-control" id="contactEmail" name="contactEmail" data-bind="value : contactEmail" required="required" validationMessage="Bạn phải điền email" readonly>
 									<span data-for="contactEmail" class="k-invalid-msg"></span> 
 								</div>
 							</div>
@@ -209,6 +209,9 @@
 				$("\\#formPartNo"+id).empty();
 
 				var alpaca = eval("(" + result + ")");
+
+				console.log("alpaca==================", alpaca);
+				<#-- var alpaca = result; -->
 				var formdata = fnGetFormData(${dossierId},dossierFile.referenceUid);
 				
 				if(formdata.dinh_danh){
@@ -226,7 +229,11 @@
 				
 				alpaca.data = formdata; 
 
+				setTimeout(function(){
 			$("\\#formPartNo"+id).alpaca(alpaca);
+				}, 1000);
+
+			
 			<#-- $("\\#formPartNo"+id).append('<div class="row"><div class="col-xs-12 col-sm-12"><button id="btn-save-formalpaca'+id+'" class="btn btn-active MB10 MT10 saveForm" 
 			type="button" data-pk="'+id+'" referentUid="'+referentUidFile+'">Ghi lại</button></div></div>'); -->
 
@@ -276,6 +283,7 @@
 
 <div class="button-row MT20">
 	<button class="btn btn-active" id="btn-submit-dossier">Lưu <i class="fa fa-save"></i></button>
+	<button class="btn btn-active" id="btn-next-step-dossier" type="button"><i class="fa fa-sign-in" aria-hidden="true"></i> Tiếp tục</button>
 	<#-- <button class="btn btn-active" id="btn-submit-dossier"><i class="fa fa-paper-plane"></i> Nộp hồ sơ</button>
 	<button class="btn btn-active"><i class="fa fa-trash"></i> Xóa</button> -->
 	
@@ -498,9 +506,15 @@
 		funSaveDossier();
 	});
 
+	$("#btn-next-step-dossier").click(function(){
+		funSaveDossier();
+		setTimeout(function(){ 
+			manageDossier.navigate("/taohosomoi/nophoso/${dossierId}");
+		}, 1000);
+	});
+
 	funSaveDossier = function(){
 		//PUT dossier
-		
 		var validator = $("#detailDossier").kendoValidator().data("kendoValidator");
 		var validateDossierTemplate = fnCheckValidTemplate();
 
@@ -547,12 +561,10 @@
 				},
 				success :  function(result){                       
 					console.log("PUT Dossier success!");
-
-				//finish PUT dossier create action for dossier
+					if(result.dossierStatus == ''){
 				createActionDossier(${dossierId});
-
-				manageDossier.navigate("/taohosomoi/nophoso/${dossierId}");
-
+					}
+					
 			},
 			error:function(result){
 				console.error(result);

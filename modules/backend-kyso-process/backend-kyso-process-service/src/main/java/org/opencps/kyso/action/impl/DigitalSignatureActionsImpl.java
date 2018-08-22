@@ -200,6 +200,7 @@ public class DigitalSignatureActionsImpl implements DigitalSignatureActions{
 //							fileNames.put(urlFile);
 
 				fieldName = signer.getSignatureName();
+				_log.info("Field name: " + fieldName);
 				fullPathSigned = signer.getSignedFile();
 				hashComputers.put(Base64.encode(inHash));
 				signFieldNames.put(fieldName);

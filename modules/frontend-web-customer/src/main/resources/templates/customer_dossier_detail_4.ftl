@@ -212,12 +212,19 @@
 									#}#
 								</span>
 
+								#
+									var lockState = fnCheckLockTemplate("${dossier.lockState}",id);
+								#
+
 								<div class="actions">
+
+									#if(!lockState){#
 									<a href="javascript:;" class="text-light-blue uploadfile-form-repository" data-toggle="tooltip" data-placement="top" title="Tải giấy tờ từ kho lưu trữ" part-no="#:id#>
 										<i class="fa fa-archive" aria-hidden="true"></i>
 									</a>
+									#}#
 									
-									#if("${(dossier.dossierStatus)!}" === "new" || "${(dossier.dossierStatus)!}" === "waiting" || "${(dossier.dossierStatus)!}" === ""){#
+									#if(!lockState){#
 									<label class="MB0 ML10 hover-pointer" for="file#:id#" title="Tải file lên" >
 										<i class="fa fa-upload text-light-blue"></i>
 									</label>
@@ -231,26 +238,31 @@
 									<a href="javascript:;" class="dossier-component-profile" data-placement="top" title="Số tệp tin" data-partno="#:id#" data-number="#if(hasForm){# 1 #}else {# 0 #}#">
 										<span class="number-in-circle" >#if(hasForm){# 1 #}else {# 0 #}#</span>
 									</a>
-
+									
+									#if(!lockState){#
 									<a href="javascript:;" class="text-light-gray delete-dossier-file" data-toggle="tooltip" data-placement="top" title="Xóa" data-partno="#:id#" fileTemplateNo="#:fileTemplateNo#" eForm="#:hasForm#">
 										<i class="fa fa-trash-o" aria-hidden="true"></i> Xóa
 									</a>
+									#}#
 								</div>
 							</div>
 
-							#if(hasForm){
+							#
+								if(hasForm){
 							var dossierFile =  getReferentUidFile(${dossierId},id);
 							console.log(dossierFile);
-							var hiddenState = "pointer-events:none;";
-							if("${(dossier.dossierStatus)!}" === "new" || "${(dossier.dossierStatus)!}" === "waiting" || "${(dossier.dossierStatus)!}" === ""){
-							hiddenState = "";
+
+								var hiddenState = "";
+
+								if(lockState){
+									hiddenState = "pointer-events:none;";
 						}
 
 						#
 
 						<div class="collapse" id="collapseDossierPart#:id#">
 
-							#if("${(dossier.dossierStatus)!}" === "new" || "${(dossier.dossierStatus)!}" === "waiting" || "${(dossier.dossierStatus)!}" === ""){#
+							#if(!lockState){#
 							<div class="col-xs-12 col-sm-12 text-right">
 								<button id="btn-save-formalpaca#:id#" class="btn btn-active MB10 MT10 MR20 saveForm saveFormAlpaca" 
 								type="button" data-pk="#:id#" referenceUid="#:dossierFile.referenceUid#">Ghi lại</button>
@@ -260,7 +272,7 @@
 
 
 							<div class="col-sm-12" #if(dossierFile.referenceUid){# style="height:450px; width:100%;overflow:auto;" #}# >
-								<div class="formAlpacaDN" id="formPartNo#:id#" style="#:hiddenState#" data-pk="#:id#" data-partname="#:partName#">
+								<div class="formAlpacaDN" id="formPartNo#:id#" style="#:hiddenState#" data-pk="#:id#" data-partname="#:partName#" style="#:hiddenState#">
 
 								</div>
 							</div>
@@ -281,11 +293,10 @@
 						$("\\#validPart"+id).val("1");
 					}
 					alpaca1.data = formdata;
-
+								
+								setTimeout(function(){
 					$("\\#formPartNo"+id).alpaca(alpaca1);
-
-					<#-- $("\\#formPartNo"+id).append('<div class="row"><div class="col-xs-12 col-sm-12 "><button id="btn-save-formalpaca'+id+'" class="btn btn-active MB10 MT10 saveForm" type="button" data-pk="'+id+'" referentUid="'+referentUidFile+'">Ghi lại</button></div></div>'); -->
-
+								}, 1000);
 				},
 				error : function(result){
 
@@ -294,9 +305,9 @@
 	}#
 
 	#}#
-</script>
-</div>
-</form>
+			</script>
+		</div>
+	</form>
 </div>
 </div>
 
@@ -534,7 +545,6 @@
 </div>
 </div> 
 
-
 <div class="row-parts-content" id="postal" data-bind="value: viaPostal">
 	<div class="row">
 		<div class="col-sm-12 MB10" >
@@ -664,7 +674,6 @@
 				}
 			}
 		}
-
 		return false;
 	}
 

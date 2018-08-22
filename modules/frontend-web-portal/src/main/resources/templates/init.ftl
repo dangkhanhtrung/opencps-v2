@@ -12,6 +12,7 @@
 <@portlet["defineObjects"] />
 
 <#assign groupId = themeDisplay.getScopeGroupId() />
+<#assign screenName = themeDisplay.getUser().getScreenName() />
 <#assign userId = themeDisplay.getUserId() />
 <#assign portletNamespace = themeDisplay.getPortletDisplay().getNamespace() />
 <#assign currentURL = themeDisplay.getURLCurrent() />

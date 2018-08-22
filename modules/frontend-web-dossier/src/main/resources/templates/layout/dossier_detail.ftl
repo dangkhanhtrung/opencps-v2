@@ -1,5 +1,5 @@
 <!-- TODO detailTemplate page -->
-<div v-if="detailPage" style="width: 100%;">
+<div v-if="detailPage" style="width: 100%; margin-top: 20px;">
 	<input type="hidden" id="dossierId__hidden" :value="detailModel.dossierId" />
 	<input type="hidden" id="submitDate__hidden" :value="detailModel.submitDate" />
 	
@@ -18,10 +18,10 @@
 					<v-icon class="mr-2">undo</v-icon>
 				Quay lại
 				</v-btn>
-                <v-btn v-if="navigationFilterview" v-on:click.native.prevent.stop="navigationFilterview = !navigationFilterview" flat icon class="mr-3 my-0 hidden-sm-and-down"><v-icon>fullscreen</v-icon></v-btn>
+                <#-- <v-btn v-if="navigationFilterview" v-on:click.native.prevent.stop="navigationFilterview = !navigationFilterview" flat icon class="mr-3 my-0 hidden-sm-and-down"><v-icon>fullscreen</v-icon></v-btn>
 
                 <v-btn v-if="!navigationFilterview" v-on:click.native.prevent.stop="navigationFilterview = !navigationFilterview" flat icon class="mr-3 my-0 hidden-sm-and-down"><v-icon>fullscreen_exit</v-icon></v-btn>
-
+ -->
 			</div>
 	
 		</div>
@@ -191,9 +191,9 @@
 			<v-tabs-item :href="'#tab-dossier-detail-1'">
 			THÀNH PHẦN HỒ SƠ
 			</v-tabs-item>
-			<v-tabs-item :href="'#tab-dossier-detail-2'" @click.prevent.stop="_initchangeProcessStep();">
+			<#-- <v-tabs-item :href="'#tab-dossier-detail-2'" @click.prevent.stop="_initchangeProcessStep();">
 			THỤ LÝ HỒ SƠ
-			</v-tabs-item>
+			</v-tabs-item> -->
 			<v-tabs-item :href="'#tab-dossier-detail-3'" @click.prevent.stop="selectDossierActionTab(detailModel)">
 			TIẾN TRÌNH XỬ LÝ
 			</v-tabs-item>
@@ -204,6 +204,43 @@
 		</v-tabs-bar>
 		<v-tabs-items>
 			<v-tabs-content :id="'tab-dossier-detail-1'" reverse-transition="slide-y-transition" transition="slide-y-transition">
+			<v-tabs :scrollable="false" v-if="processSteps.length > 0">
+					<v-tabs-bar dark class="grey-opencps-panel grey-opencps-panel-group-button">
+					<v-tabs-item
+						v-for="step in processSteps"
+						:key="step.processActionId"
+						:href="'#tab-temp-' + step.processActionId"
+						@click.prevent.stop="changeProcessStep(step)"
+						v-if="detailModel.specialNo !== 0 && !stateOnlyFollow"
+					>
+                        <v-btn
+                            :loading="true"
+                            :disabled="true"
+                            v-if="stepLoading"
+                            small
+                        >
+                            <span slot="loader">Loading...</span>
+                        </v-btn>
+                        <v-btn
+                            color="primary"
+                            class="mx-0 my-0"
+                            small
+                            v-else
+                        >
+                            {{ step.actionName }}
+                        </v-btn>
+						
+					</v-tabs-item>
+					<div v-if="(detailModel.specialNo == 0 )">
+						<i>Hồ sơ này chỉ được theo dõi</i>
+					</div>
+					<div v-else-if="stateOnlyFollow">
+						<i>Hồ sơ này chỉ được theo dõi</i>
+					</div>
+					<v-menu>
+					</v-menu>
+					</v-tabs-bar>
+				</v-tabs>
 			<v-expansion-panel expand class="my-0">
 				<v-expansion-panel-content v-bind:value="true" class="pl-0">
 				<div slot="header">
@@ -223,8 +260,45 @@
 				<div class="opencps_list_border_style" jx-bind="listDocumentOut"></div> 
 				</v-expansion-panel-content>
 			</v-expansion-panel>
+			<v-tabs :scrollable="false" v-if="processSteps.length > 0">
+					<v-tabs-bar dark class="grey-opencps-panel grey-opencps-panel-group-button">
+					<v-tabs-item
+						v-for="step in processSteps"
+						:key="step.processActionId + 'bt'"
+						:href="'#tab-temp-' + step.processActionId + 'bt'"
+						@click.prevent.stop="changeProcessStep(step)"
+						v-if="detailModel.specialNo !== 0 && !stateOnlyFollow"
+					>
+                        <v-btn
+                            :loading="true"
+                            :disabled="true"
+                            v-if="stepLoading"
+                            small
+                        >
+                            <span slot="loader">Loading...</span>
+                        </v-btn>
+                        <v-btn
+                            color="primary"
+                            class="mx-0 my-0"
+                            small
+                            v-else
+                        >
+                            {{ step.actionName }}
+                        </v-btn>
+						
+					</v-tabs-item>
+					<div v-if="(detailModel.specialNo == 0 )">
+						<i>Hồ sơ này chỉ được theo dõi</i>
+					</div>
+					<div v-else-if="stateOnlyFollow">
+						<i>Hồ sơ này chỉ được theo dõi</i>
+					</div>
+					<v-menu>
+					</v-menu>
+					</v-tabs-bar>
+				</v-tabs>
 			</v-tabs-content>
-			<v-tabs-content :id="'tab-dossier-detail-2'" reverse-transition="slide-y-transition" transition="slide-y-transition">
+			<!-- <v-tabs-content :id="'tab-dossier-detail-2'" reverse-transition="slide-y-transition" transition="slide-y-transition">
 				<v-tabs :scrollable="false" v-if="processSteps">
 					<v-tabs-bar dark class="grey-opencps-panel grey-opencps-panel-group-button">
 					<v-tabs-item
@@ -234,20 +308,20 @@
 						@click.prevent.stop="changeProcessStep(step)"
 						v-if="detailModel.specialNo !== 0 && !stateOnlyFollow"
 					>
-                        <v-btn
-                            :loading="true"
-                            :disabled="true"
-                            v-if="stepLoading"
-                        >
-                            <span slot="loader">Loading...</span>
-                        </v-btn>
-                        <v-btn
-                            color="primary"
-                            class="mx-0 my-0"
-                            v-else
-                        >
-                            {{ step.actionName }}
-                        </v-btn>
+			                        <v-btn
+			                            :loading="true"
+			                            :disabled="true"
+			                            v-if="stepLoading"
+			                        >
+			                            <span slot="loader">Loading...</span>
+			                        </v-btn>
+			                        <v-btn
+			                            color="primary"
+			                            class="mx-0 my-0"
+			                            v-else
+			                        >
+			                            {{ step.actionName }}
+			                        </v-btn>
 						
 					</v-tabs-item>
 					<div v-if="(detailModel.specialNo == 0 )">
@@ -265,13 +339,13 @@
 						Hồ sơ chờ đồng bộ ...
 					</div>
 					<div v-else-if="stepModel.plugin">
-
-						<!-- <div class="flex xs12 sm12 text-center">
+			
+						<div class="flex xs12 sm12 text-center">
 							<object id="dossierPDFViewPlugin" data="" width="100%" height="100%">
 								<iframe :src="stepModel.url" width="100%" height="100%"> </iframe>
 							</object>
 							<div id="dossierPDFViewNotFound" class="text-center">{{ stepModel.no_pdf }}</div>
-						</div> -->
+						</div>
 						<div v-if="stepModel.pdf">
 							<div class="flex xs12 sm12 text-center">
 								<object id="dossierPDFViewPlugin" data="" width="100%" height="100%">
@@ -288,137 +362,137 @@
 						</div> 
 						
 					</div>
-                    <div v-else>
-                    	
-                    	<v-card-title primary-title class="mx-2 pb-0" v-if="stepModel.createFiles">
-                            <v-layout wrap> 
-                                <v-flex xs12 id="labelTPKQ">
-                                    File đính kèm:
-                                </v-flex>
-                            </v-layout>
-                        </v-card-title>
-                        
-                    	<v-expansion-panel class="my-0 expansion__list_style">
-                            <v-expansion-panel-content v-for="(item,i) in stepModel.createFiles" v-if="item" :key="item.dossierPartId">
-                            <div slot="header" @click.prevent="showAlpacaJSFORM(item)">{{i + 1}}. {{item.partName}} <small v-if="item.eform">( Form trực tuyến )</small> </div>
-                            <div slot="header" class="text-right">
-                                <v-btn flat icon light class="small-btn-x mx-0 my-0" v-on:click.native.prevent="singleFileUpload(item)">
-                                    <v-icon>file_upload</v-icon>
-                                </v-btn>
-                                <v-btn color="primary" fab small dark class="small-btn-x mx-0 my-0" v-on:click.native.prevent="viewDossierFileResult(item, i)" :id="'btn-count-partno'+item.partNo">
-                                    {{item.counter}}
-                                </v-btn>
-                                
-                                <v-btn flat icon light class="small-btn-x mx-0 my-0" v-on:click.native.prevent="deleteDossierFileVersion(item)">
-                                    <v-icon>delete</v-icon>
-                                </v-btn>
-                            </div>
-
-                            <input type="file" :id="'inputfile_'+item.dossierPartId" style="display:none" v-on:change="singleFileUploadInput($event, item, i)"/>
-                            <div class="alert alert--outline success--text mx-4 hidden" :id="'message_success_'+item.referenceUid" >
-                            	<i aria-hidden="true" class="material-icons icon alert__icon">check_circle</i>
-	                            <div>
+			                    <div v-else>
+			                    	
+			                    	<v-card-title primary-title class="mx-2 pb-0" v-if="stepModel.createFiles">
+			                            <v-layout wrap> 
+			                                <v-flex xs12 id="labelTPKQ">
+			                                    File đính kèm:
+			                                </v-flex>
+			                            </v-layout>
+			                        </v-card-title>
+			                        
+			                    	<v-expansion-panel class="my-0 expansion__list_style">
+			                            <v-expansion-panel-content v-for="(item,i) in stepModel.createFiles" v-if="item" :key="item.dossierPartId">
+			                            <div slot="header" @click.prevent="showAlpacaJSFORM(item)">{{i + 1}}. {{item.partName}} <small v-if="item.eform">( Form trực tuyến )</small> </div>
+			                            <div slot="header" class="text-right">
+			                                <v-btn flat icon light class="small-btn-x mx-0 my-0" v-on:click.native.prevent="singleFileUpload(item)">
+			                                    <v-icon>file_upload</v-icon>
+			                                </v-btn>
+			                                <v-btn color="primary" fab small dark class="small-btn-x mx-0 my-0" v-on:click.native.prevent="viewDossierFileResult(item, i)" :id="'btn-count-partno'+item.partNo">
+			                                    {{item.counter}}
+			                                </v-btn>
+			                                
+			                                <v-btn flat icon light class="small-btn-x mx-0 my-0" v-on:click.native.prevent="deleteDossierFileVersion(item)">
+			                                    <v-icon>delete</v-icon>
+			                                </v-btn>
+			                            </div>
+			
+			                            <input type="file" :id="'inputfile_'+item.dossierPartId" style="display:none" v-on:change="singleFileUploadInput($event, item, i)"/>
+			                            <div class="alert alert--outline success--text mx-4 hidden" :id="'message_success_'+item.referenceUid" >
+			                            	<i aria-hidden="true" class="material-icons icon alert__icon">check_circle</i>
+				                            <div>
 							    	Ghi lại {{item.partName}} Thành công!.
 							  	</div>
 						  	</div>
 						  	<div class="alert alert--outline error--text mx-4 hidden" :id="'message_error_'+item.referenceUid" >
-                            	<i aria-hidden="true" class="material-icons icon alert__icon">warning</i>
-	                            <div>
+			                            	<i aria-hidden="true" class="material-icons icon alert__icon">warning</i>
+				                            <div>
 							    	Ghi lại {{item.partName}} Thất bại!.
 							  	</div>
 						  	</div>
-                            <div class="text-right pr-4" v-if="item.eform">
-                                <v-btn color="primary" :id="'btn-save-formalpaca'+item.partNo"
-                                	:referenceUid="item.referenceUid"
-                                	:dossierId="detailModel.dossierId"
-                                	class="saveForm"
-                                    :loading="loadingAlpacajsForm"
-                                    :disabled="loadingAlpacajsForm"
-                                    v-on:click.native.prevent.stop="submitAlpacajsForm(item)"> Ghi lại </v-btn>
-                            </div>
-                            <div :id="'alpacajs_form_'+item.partNo" class="expansion-panel__header"></div>
+			                            <div class="text-right pr-4" v-if="item.eform">
+			                                <v-btn color="primary" :id="'btn-save-formalpaca'+item.partNo"
+			                                	:referenceUid="item.referenceUid"
+			                                	:dossierId="detailModel.dossierId"
+			                                	class="saveForm"
+			                                    :loading="loadingAlpacajsForm"
+			                                    :disabled="loadingAlpacajsForm"
+			                                    v-on:click.native.prevent.stop="submitAlpacajsForm(item)"> Ghi lại </v-btn>
+			                            </div>
+			                            <div :id="'alpacajs_form_'+item.partNo" class="expansion-panel__header"></div>
 							<input type="hidden" :id="'dossierFileId' + item.partNo" :value="item.dossierFileId" />
-                            </v-expansion-panel-content>
-                        </v-expansion-panel>
-                        
-                        
-
-                        <!-- <v-card-title primary-title class="mx-2 py-0">
-                            <v-layout wrap> 
-                            	<v-flex xs12 class="mb-3" v-if="stepModel.allowAssignUser">
-                                    <div jx-bind="processAssignUserId"></div>
-                                </v-flex>
-                                <v-flex xs12>
-                                    Nhập ý kiến {{stepModel.actionName}}:
-                                    <div jx-bind="processActionNote"></div>
-                                </v-flex>
-                            </v-layout>
-                        </v-card-title>
-                        
-                        <v-card-actions>
-                            <v-btn flat color="primary" class="px-0" :loading="actionsSubmitLoading" :disabled="actionsSubmitLoading"
-                            @click.prevent.stop="postNextActions(stepModel)">Xác nhận</v-btn>
-                        </v-card-actions> -->
+			                            </v-expansion-panel-content>
+			                        </v-expansion-panel>
+			                        
+			                        
+			
+			                        <v-card-title primary-title class="mx-2 py-0">
+			                            <v-layout wrap> 
+			                            	<v-flex xs12 class="mb-3" v-if="stepModel.allowAssignUser">
+			                                    <div jx-bind="processAssignUserId"></div>
+			                                </v-flex>
+			                                <v-flex xs12>
+			                                    Nhập ý kiến {{stepModel.actionName}}:
+			                                    <div jx-bind="processActionNote"></div>
+			                                </v-flex>
+			                            </v-layout>
+			                        </v-card-title>
+			                        
+			                        <v-card-actions>
+			                            <v-btn flat color="primary" class="px-0" :loading="actionsSubmitLoading" :disabled="actionsSubmitLoading"
+			                            @click.prevent.stop="postNextActions(stepModel)">Xác nhận</v-btn>
+			                        </v-card-actions>
 						
 						<div v-if="stepModel.configNote">
-                        	<v-card-title primary-title class="mx-2 py-0">
-                        		<v-layout wrap> 
-                        			<v-flex xs12 class="mb-3" v-if="stepModel.allowAssignUser">
-                        				<div jx-bind="processAssignUserId"></div>
-                        			</v-flex>
-                        			<v-flex xs12>
-                        				<span v-if="stepModel.configNote.displayNote">{{ stepModel.configNote.titleNote }}</span>
-                        					<!-- <div jx-bind="processActionNote" v-if="stepModel.configNote.displayNote">
-                        							
-                        					</div> -->
-
-                        					<v-text-field
-                        					name="processActionNote"
-                        					id="processActionNote"
-                        					multi-line
-                        					 v-if="stepModel.configNote.displayNote"></v-text-field>
-                        			</v-flex>
-                        		</v-layout>
-                        	</v-card-title>
-                        
-                        	<v-card-actions>
-                        		<v-btn flat color="primary" class="px-0" :loading="actionsSubmitLoading" :disabled="actionsSubmitLoading" v-if="stepModel.configNote.confirmButton"
-                        		@click.prevent.stop="postNextActions2(stepModel)">{{ stepModel.configNote.confirmButton }}</v-btn>
-                        
-                        		<v-btn flat class="px-0" @click.prevent.stop="refreshProcess()" v-if="stepModel.configNote.cancelButton">{{ stepModel.configNote.cancelButton }}</v-btn>
-                        	</v-card-actions>
-                        </div>
-                        
-                        <div v-else>
-                        	<v-card-title primary-title class="mx-2 py-0">
-                        		<v-layout wrap> 
-                        			<v-flex xs12 class="mb-3" v-if="stepModel.allowAssignUser">
-                        				<div jx-bind="processAssignUserId"></div>
-                        			</v-flex>
-                        			<v-flex xs12>
-                        				Nhập ý kiến {{stepModel.actionName}}:
-                        				<!-- <div jx-bind="processActionNote">
-                        						
-                        				</div> -->
-                        				<v-text-field
-                        				name="processActionNote"
-                        				id="processActionNote"
-                        				multi-line
-                        				></v-text-field>
-                        			</v-flex>
-                        		</v-layout>
-                        	</v-card-title>
-                        	
-                        	<v-card-actions>
-                        		<v-btn flat color="primary" class="px-0" :loading="actionsSubmitLoading" :disabled="actionsSubmitLoading"
-                        		@click.prevent.stop="postNextActions2(stepModel)">Xác nhận</v-btn>
-                        	</v-card-actions>
-                        </div>
-                       
-                    </div>
+			                        	<v-card-title primary-title class="mx-2 py-0">
+			                        		<v-layout wrap> 
+			                        			<v-flex xs12 class="mb-3" v-if="stepModel.allowAssignUser">
+			                        				<div jx-bind="processAssignUserId"></div>
+			                        			</v-flex>
+			                        			<v-flex xs12>
+			                        				<span v-if="stepModel.configNote.displayNote">{{ stepModel.configNote.titleNote }}</span>
+			                        					<div jx-bind="processActionNote" v-if="stepModel.configNote.displayNote">
+			                        							
+			                        					</div>
+			
+			                        					<v-text-field
+			                        					name="processActionNote"
+			                        					id="processActionNote"
+			                        					multi-line
+			                        					 v-if="stepModel.configNote.displayNote"></v-text-field>
+			                        			</v-flex>
+			                        		</v-layout>
+			                        	</v-card-title>
+			                        
+			                        	<v-card-actions>
+			                        		<v-btn flat color="primary" class="px-0" :loading="actionsSubmitLoading" :disabled="actionsSubmitLoading" v-if="stepModel.configNote.confirmButton"
+			                        		@click.prevent.stop="postNextActions2(stepModel)">{{ stepModel.configNote.confirmButton }}</v-btn>
+			                        
+			                        		<v-btn flat class="px-0" @click.prevent.stop="refreshProcess()" v-if="stepModel.configNote.cancelButton">{{ stepModel.configNote.cancelButton }}</v-btn>
+			                        	</v-card-actions>
+			                        </div>
+			                        
+			                        <div v-else>
+			                        	<v-card-title primary-title class="mx-2 py-0">
+			                        		<v-layout wrap> 
+			                        			<v-flex xs12 class="mb-3" v-if="stepModel.allowAssignUser">
+			                        				<div jx-bind="processAssignUserId"></div>
+			                        			</v-flex>
+			                        			<v-flex xs12>
+			                        				Nhập ý kiến {{stepModel.actionName}}:
+			                        				<div jx-bind="processActionNote">
+			                        						
+			                        				</div>
+			                        				<v-text-field
+			                        				name="processActionNote"
+			                        				id="processActionNote"
+			                        				multi-line
+			                        				></v-text-field>
+			                        			</v-flex>
+			                        		</v-layout>
+			                        	</v-card-title>
+			                        	
+			                        	<v-card-actions>
+			                        		<v-btn flat color="primary" class="px-0" :loading="actionsSubmitLoading" :disabled="actionsSubmitLoading"
+			                        		@click.prevent.stop="postNextActions2(stepModel)">Xác nhận</v-btn>
+			                        	</v-card-actions>
+			                        </div>
+			                       
+			                    </div>
 				</v-card>
-                
-			</v-tabs-content>
+			                
+			</v-tabs-content> -->
 			<v-tabs-content :id="'tab-dossier-detail-3'" reverse-transition="slide-y-transition" transition="slide-y-transition">
 			<div class="opencps_list_border_style" jx-bind="listHistoryProcessing"></div>
 			</v-tabs-content>
@@ -430,6 +504,172 @@
 			</v-tabs-content>
 		</v-tabs-items>
 	</v-tabs>
+	<v-dialog v-model="dialogThuLyHoSo" 
+	persistent :overlay="false"
+	:max-width="maxWidthDialog"
+	style="overflow: hidden;"
+	transition="dialog-transition">
+	<v-card>
+		<v-card-title class="px-0 py-0" style="height: 50px;">
+			<v-toolbar dark color="primary" height="40">
+				<div class="text-bold" v-if="stepModel !== null && stepModel !== undefined">{{stepModel['actionName']}}</div>
+				<v-spacer></v-spacer>
+				<v-toolbar-items>
+					<v-btn icon dark @click.native="dialogThuLyHoSo = false">
+						<v-icon>close</v-icon>
+					</v-btn>
+				</v-toolbar-items>
+			</v-toolbar>
+		</v-card-title>
+		<v-card-text>
+			<div v-if="stepModel === null" style="width: 100%;" class="text-xs-center">
+				<v-progress-circular indeterminate v-bind:size="100" color="purple"></v-progress-circular>
+			</div>
+			<div v-else-if="stepModel.pending">
+				Hồ sơ chờ đồng bộ ...
+			</div>
+			<div v-else-if="stepModel['plugin']">
+				<div v-if="stepModel.pdf">
+					<div class="flex xs12 sm12 text-center">
+						<object id="dossierPDFViewPlugin" data="" width="100%" height="100%" v-if="!stepModel.no_pdf">
+							<iframe :src="stepModel.url" width="100%" style="min-height: 500px !important; padding-left: 0;"> </iframe>
+						</object>
+						<div id="dossierPDFViewNotFound" class="text-center">{{ stepModel.no_pdf }}</div>
+					</div>
+				</div>
+
+				<div v-if="stepModel['html']">
+					<input type="hidden" class="dossierFilePartNo" name="">
+					<div id="alpacajs_form_plugin" class="expansion-panel__header"></div>
+					<div id="dossierAlpacaNotFound" class="text-center">{{ stepModel.no_html }}</div>
+				</div> 
+			</div>
+			<div v-else>
+				<v-card-title primary-title class="mx-2 pb-0 px-0 pt-0" v-if="stepModel.createFiles && !checkHasEform(stepModel.createFiles)">
+					<v-layout wrap> 
+						<v-flex xs12 id="labelTPKQ">
+							File đính kèm:
+						</v-flex>
+					</v-layout>
+				</v-card-title>
+				<v-expansion-panel class="my-0 expansion__list_style">
+					<v-expansion-panel-content v-for="(item,i) in stepModel.createFiles" v-if="!item.eform" :key="item.dossierPartId">
+						<div slot="header" @click.prevent="showAlpacaJSFORM(item)">{{i + 1}}. {{item.partName}} <small v-if="item.eform">( Form trực tuyến )</small> </div>
+						<div slot="header" class="text-right">
+							<v-btn flat icon light class="small-btn-x mx-0 my-0" v-on:click.native.prevent="singleFileUpload(item)">
+								<v-icon>file_upload</v-icon>
+							</v-btn>
+							<v-btn color="primary" fab small dark class="small-btn-x mx-0 my-0" @click="viewDossierFileVersionDialog(item, i)" :id="'btn-count-partno'+item.partNo">
+								{{item.counter}}
+							</v-btn>
+
+							<v-btn flat icon light class="small-btn-x mx-0 my-0" v-on:click.native.prevent="deleteDossierFileVersion(item)">
+								<v-icon>delete</v-icon>
+							</v-btn>
+						</div>
+						<input type="file" :id="'inputfile_'+item.dossierPartId" style="display:none" v-on:change="singleFileUploadInput($event, item, i)"/>
+					</v-expansion-panel-content>
+				</v-expansion-panel>
+				<div v-if="item.eform" v-for="(item,i) in stepModel.createFiles" :key="item.dossierPartId + 'eform'">
+					<div class="alert alert--outline success--text mx-4 hidden" :id="'message_success_'+item.referenceUid" >
+						<i aria-hidden="true" class="material-icons icon alert__icon">check_circle</i>
+						<div>
+							Ghi lại {{item.partName}} Thành công!.
+						</div>
+					</div>
+					<div class="alert alert--outline error--text mx-4 hidden" :id="'message_error_'+item.referenceUid" >
+						<i aria-hidden="true" class="material-icons icon alert__icon">warning</i>
+						<div>
+							Ghi lại {{item.partName}} Thất bại!.
+						</div>
+					</div>
+					<div class="text-right pr-4" v-if="item.eform">
+						<#-- <v-btn color="primary" :id="'btn-save-formalpaca'+item.partNo"
+						:referenceUid="item.referenceUid"
+						:dossierId="detailModel.dossierId"
+						class="saveForm"
+						:loading="loadingAlpacajsForm"
+						:disabled="loadingAlpacajsForm"
+						v-on:click.native.prevent.stop="submitAlpacajsForm(item)"> Ghi lại </v-btn> -->
+					</div>
+					<div :id="'alpacajs_form_'+item.partNo" class="expansion-panel__header"></div>
+					<input type="hidden" :id="'dossierFileId' + item.partNo" :value="item.dossierFileId" />
+				</div>
+
+				<div v-if="stepModel.configNote">
+					<v-card-title primary-title class="mx-2 py-0 px-0 pt-0">
+						<v-layout wrap> 
+							<v-flex xs12 class="mb-3" v-if="stepModel.allowAssignUser">
+								<div jx-bind="processAssignUserId"></div>
+							</v-flex>
+							<v-flex xs12>
+								<span v-if="stepModel.configNote.displayNote">{{ stepModel.configNote.titleNote }}</span>
+								<v-text-field
+								name="processActionNote"
+								id="processActionNote"
+								multi-line
+								rows="2"
+								v-if="stepModel.configNote.displayNote"></v-text-field>
+							</v-flex>
+						</v-layout>
+					</v-card-title>
+					<v-card-actions class="text-xs-right mt-2">
+						<v-btn color="primary" :id="'btn-save-formalpaca'+item.partNo"
+						v-for="(item, index) in stepModel.createFiles"
+						v-if="stepModel.hasOwnProperty('createFiles') && item.eform"
+						:referenceUid="item.referenceUid"
+						:dossierId="detailModel.dossierId"
+						class="saveForm"
+						:loading="loadingAlpacajsForm"
+						:disabled="loadingAlpacajsForm"
+						small
+						v-on:click.native.prevent.stop="submitAlpacajsForm(item)"> Ghi lại </v-btn>
+
+						<v-btn small color="primary" class="px-0" :loading="actionsSubmitLoading" :disabled="actionsSubmitLoading" v-if="stepModel.configNote.confirmButton"
+						@click.prevent.stop="postNextActions2(stepModel)">{{ stepModel.configNote.confirmButton }}</v-btn>
+
+						<v-btn small class="px-0" @click.prevent.stop="refreshProcess()" v-if="stepModel.configNote.cancelButton">{{ stepModel.configNote.cancelButton }}</v-btn>
+					</v-card-actions>
+				</div>
+
+				<div v-else>
+					<v-card-title primary-title class="mx-2 py-0 px-0 pt-0">
+						<v-layout wrap> 
+							<v-flex xs12 class="mb-3" v-if="stepModel.allowAssignUser">
+								<div jx-bind="processAssignUserId"></div>
+							</v-flex>
+							<v-flex xs12>
+								Nhập ý kiến {{stepModel.actionName}}:
+								<v-text-field
+								name="processActionNote"
+								id="processActionNote"
+								multi-line
+								rows="2"
+								></v-text-field>
+							</v-flex>
+						</v-layout>
+					</v-card-title>
+
+					<v-card-actions class="text-xs-right mt-2">
+						<v-btn color="primary" :id="'btn-save-formalpaca'+item.partNo"
+						v-for="(item, index) in stepModel.createFiles"
+						v-if="stepModel.hasOwnProperty('createFiles') && item.eform"
+						:referenceUid="item.referenceUid"
+						:dossierId="detailModel.dossierId"
+						class="saveForm"
+						:loading="loadingAlpacajsForm"
+						:disabled="loadingAlpacajsForm"
+						small
+						v-on:click.native.prevent.stop="submitAlpacajsForm(item)"> Ghi lại </v-btn>
+						<v-btn small color="primary" class="px-0" :loading="actionsSubmitLoading" :disabled="actionsSubmitLoading"
+						@click.prevent.stop="postNextActions2(stepModel)">Xác nhận</v-btn>
+					</v-card-actions>
+				</div>
+
+			</div>
+		</v-card-text>
+	</v-card>
+</v-dialog> 
 </div>
 			
 <script type="text/javascript">

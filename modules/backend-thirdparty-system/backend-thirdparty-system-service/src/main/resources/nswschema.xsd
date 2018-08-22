@@ -137,6 +137,9 @@
 			<xsd:element ref="ApprovalOfVLAdjustFrequency" minOccurs="0"></xsd:element>
 			<xsd:element ref="VTOfficialTransportPermit" minOccurs="0"></xsd:element>
 			<xsd:element ref="ApprovalOfVTFixRoadTransport" minOccurs="0"></xsd:element>
+			<xsd:element ref="CLVCommercialCrossBorderTransportPermit" minOccurs="0"></xsd:element>
+			<xsd:element ref="CLVNonCommercialCrossBorderTransportPermit" minOccurs="0"></xsd:element>
+			<xsd:element ref="ApprovalOfCLVFixRoadTransport" minOccurs="0"></xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -252,6 +255,7 @@
 			</xsd:element>
 			<xsd:element ref="Transporter" minOccurs="0"></xsd:element>
 			<xsd:element ref="AttachedFile" minOccurs="1" maxOccurs="unbounded"></xsd:element>
+			<xsd:element ref="IssuingAuthority"></xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 	

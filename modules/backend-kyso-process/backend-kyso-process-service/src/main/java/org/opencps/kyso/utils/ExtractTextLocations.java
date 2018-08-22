@@ -82,33 +82,38 @@ public class ExtractTextLocations extends PDFTextStripper {
 				.getDocumentCatalog().getAllPages();
 			if (allPages != null && allPages
 				.size() > 0) {
-				PDPage page = (PDPage) allPages
-					.get(0);
+				for (int i = 0; i < allPages.size(); i++) {
+					PDPage page = (PDPage) allPages
+							.get(i);
 
-				PDStream contents = page
-					.getContents();
-				if (contents != null) {
-					this
-						.processStream(page, page
-							.findResources(), page
-								.getContents().getStream());
-				}
+						PDStream contents = page
+							.getContents();
+						if (contents != null) {
+							this
+								.processStream(page, page
+									.findResources(), page
+										.getContents().getStream());
+						}
 
-				PDRectangle pageSize = page
-					.findMediaBox();
-				if (pageSize != null) {
-					setPageWidth(pageSize
-						.getWidth());
-					setPageHeight(pageSize
-						.getHeight());
-					setPageLLX(pageSize
-						.getLowerLeftX());
-					setPageURX(pageSize
-						.getUpperRightX());
-					setPageLLY(pageSize
-						.getLowerLeftY());
-					setPageURY(pageSize
-						.getUpperRightY());
+						PDRectangle pageSize = page
+							.findMediaBox();
+						if (pageSize != null) {
+							setPageWidth(pageSize
+								.getWidth());
+							setPageHeight(pageSize
+								.getHeight());
+							setPageLLX(pageSize
+								.getLowerLeftX());
+							setPageURX(pageSize
+								.getUpperRightX());
+							setPageLLY(pageSize
+								.getLowerLeftY());
+							setPageURY(pageSize
+								.getUpperRightY());
+							
+							//Already find special character
+							break;
+						}					
 				}
 			}
 		}

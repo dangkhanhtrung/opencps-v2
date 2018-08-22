@@ -136,9 +136,9 @@ public class ApplicantManagementImpl implements ApplicantManagement {
 				throw new UnauthenticationException();
 			}
 
-			if (!auth.hasResource(serviceContext, ServiceInfo.class.getName(), ActionKeys.ADD_ENTRY)) {
-				throw new UnauthorizationException();
-			}
+//			if (!auth.hasResource(serviceContext, ServiceInfo.class.getName(), ActionKeys.ADD_ENTRY)) {
+//				throw new UnauthorizationException();
+//			}
 
 			if (query.getEnd() == 0) {
 
