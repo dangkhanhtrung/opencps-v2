@@ -4035,7 +4035,7 @@ var funLoadVue = function(stateWindowParam, dossierIdParam, dossierPartNo, email
 							value: 'stt'
 						},
 						{
-							text: 'Mã số hồ sơ',
+							text: 'Mã tiếp nhận',
 							align: 'center',
 							sortable: true,
 							value: 'dossierId'
