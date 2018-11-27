@@ -47,6 +47,7 @@ import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.search.generic.MultiMatchQuery;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -314,24 +315,20 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 	@SuppressWarnings("deprecation")
 	public Hits luceneSearchEngine(LinkedHashMap<String, Object> params, Sort[] sorts, int start, int end,
 			SearchContext searchContext) throws ParseException, SearchException {
-		String keywords = (String) params.get("keywords");
-		String employeeId = (String) params.get(EmployeeTerm.EMPLOYEE_ID);
-		String groupId = (String) params.get(EmployeeTerm.GROUP_ID);
-		String mainJobPostId = (String) params.get(EmployeeTerm.MAIN_JOBPOST_ID);
+		String keywords = GetterUtil.getString(params.get("keywords"));
+		String employeeId = GetterUtil.getString(params.get(EmployeeTerm.EMPLOYEE_ID));
+		String groupId = GetterUtil.getString(params.get(EmployeeTerm.GROUP_ID));
+		String mainJobPostId = GetterUtil.getString(params.get(EmployeeTerm.MAIN_JOBPOST_ID));
 		// String[] advFilterOptions = (String[])
 		// params.get("advFilterOptions");
-		String isAccount = (String) params.get("isAccount");
-		String workingUnitId = "";
+		String isAccount = GetterUtil.getString(params.get("isAccount"));
+		String workingUnitId = GetterUtil.getString(params.get(EmployeeTerm.WORKING_UNIT_ID));
 		
-		if (Validator.isNotNull(params.get(EmployeeTerm.WORKING_UNIT_ID))) {
-			workingUnitId = params.get(EmployeeTerm.WORKING_UNIT_ID).toString();
-		}
-		
-		String jobPostId = (String) params.get(EmployeeTerm.JOB_POS_ID);
-		String status = (String) params.get(EmployeeTerm.WORKING_STATUS);
-		String active = (String) params.get(EmployeeTerm.ACTIVE);
-		String month = (String) params.get(EmployeeTerm.MONTH);
-		String strUserIdList = (String) params.get("userIdList");
+		String jobPostId = GetterUtil.getString(params.get(EmployeeTerm.JOB_POS_ID));
+		String status = GetterUtil.getString(params.get(EmployeeTerm.WORKING_STATUS));
+		String active = GetterUtil.getString(params.get(EmployeeTerm.ACTIVE));
+		String month = GetterUtil.getString(params.get(EmployeeTerm.MONTH));
+		String strUserIdList = GetterUtil.getString(params.get("userIdList"));
 
 		Indexer<Employee> indexer = IndexerRegistryUtil.nullSafeGetIndexer(Employee.class);
 
@@ -485,19 +482,19 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 	@SuppressWarnings("deprecation")
 	public long countLuceneSearchEngine(LinkedHashMap<String, Object> params, SearchContext searchContext)
 			throws ParseException, SearchException {
-		String keywords = (String) params.get("keywords");
-		String employeeId = (String) params.get(EmployeeTerm.EMPLOYEE_ID);
-		String groupId = (String) params.get(EmployeeTerm.GROUP_ID);
-		String mainJobPostId = (String) params.get(EmployeeTerm.MAIN_JOBPOST_ID);
+		String keywords = GetterUtil.getString(params.get("keywords"));
+		String employeeId = GetterUtil.getString(params.get(EmployeeTerm.EMPLOYEE_ID));
+		String groupId = GetterUtil.getString(params.get(EmployeeTerm.GROUP_ID));
+		String mainJobPostId = GetterUtil.getString(params.get(EmployeeTerm.MAIN_JOBPOST_ID));
 		// String[] advFilterOptions = (String[])
 		// params.get("advFilterOptions");
-		String isAccount = (String) params.get("isAccount");
-		String workingUnitId = params.get(EmployeeTerm.WORKING_UNIT_ID).toString();
-		String jobPostId = (String) params.get(EmployeeTerm.JOB_POS_ID);
-		String status = (String) params.get(EmployeeTerm.WORKING_STATUS);
-		String active = (String) params.get(EmployeeTerm.ACTIVE);
-		String month = (String) params.get(EmployeeTerm.MONTH);
-		String strUserIdList = (String) params.get("userIdList");
+		String isAccount = GetterUtil.getString(params.get("isAccount"));
+		String workingUnitId = GetterUtil.getString(params.get(EmployeeTerm.WORKING_UNIT_ID));
+		String jobPostId = GetterUtil.getString(params.get(EmployeeTerm.JOB_POS_ID));
+		String status = GetterUtil.getString(params.get(EmployeeTerm.WORKING_STATUS));
+		String active = GetterUtil.getString(params.get(EmployeeTerm.ACTIVE));
+		String month = GetterUtil.getString(params.get(EmployeeTerm.MONTH));
+		String strUserIdList = GetterUtil.getString(params.get("userIdList"));
 
 		Indexer<Employee> indexer = IndexerRegistryUtil.nullSafeGetIndexer(Employee.class);
 

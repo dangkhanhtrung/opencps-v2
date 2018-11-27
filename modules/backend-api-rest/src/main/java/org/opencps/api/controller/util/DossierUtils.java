@@ -399,15 +399,12 @@ public class DossierUtils {
 							dictCollection.getDictCollectionId(), input.getGroupId());
 				}
 				if (dictItem != null) {
-					_log.info("53");
 					String metaData = dictItem.getMetaData();
 					String specialStatus = StringPool.BLANK;
 					if (Validator.isNotNull(metaData)) {
-						_log.info("metaData: " +metaData);
 						try {
 							JSONObject metaJson = JSONFactoryUtil.createJSONObject(metaData);
 							specialStatus = metaJson.getString("specialStatus");
-							_log.info("specialStatus: " +specialStatus);
 							
 						} catch (Exception e) {
 							// TODO: handle exception

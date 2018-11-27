@@ -1,6 +1,9 @@
 **/!bnd.bnd
 **/!build.gradle
 
+modules/opencps-adapter/
+modules/opencps-gateway/
+modules/opencps-queue/
 .gradle/
 build/
 target/

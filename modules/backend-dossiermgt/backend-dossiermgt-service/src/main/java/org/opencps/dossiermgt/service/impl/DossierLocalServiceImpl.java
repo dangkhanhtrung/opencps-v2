@@ -1710,7 +1710,7 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		if (Validator.isNotNull(keywords)) {
 			BooleanQuery queryBool = new BooleanQueryImpl();
 			String[] subQuerieArr = new String[] { DossierTerm.SERVICE_NAME, DossierTerm.APPLICANT_NAME,
-					DossierTerm.DOSSIER_NO_SEARCH, DossierTerm.DOSSIER_ID_CTN, DossierTerm.BRIEF_NOTE };
+					DossierTerm.DOSSIER_NO_SEARCH, DossierTerm.DOSSIER_ID_CTN, DossierTerm.BRIEF_NOTE, DossierTerm.REFERENCE_UID };
 
 //			query.addTerms(subQuerieArr, keywords.toLowerCase(), true);
 //			booleanQuery.add(query, BooleanClauseOccur.MUST);
@@ -2180,7 +2180,7 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		if (Validator.isNotNull(keywords)) {
 			BooleanQuery queryBool = new BooleanQueryImpl();
 			String[] subQuerieArr = new String[] { DossierTerm.SERVICE_NAME, DossierTerm.APPLICANT_NAME,
-					DossierTerm.DOSSIER_NO_SEARCH, DossierTerm.DOSSIER_ID_CTN, DossierTerm.BRIEF_NOTE };
+					DossierTerm.DOSSIER_NO_SEARCH, DossierTerm.DOSSIER_ID_CTN, DossierTerm.BRIEF_NOTE, DossierTerm.REFERENCE_UID };
 
 			String[] keywordArr = keywords.split(StringPool.SPACE);
 			for (String fieldSearch : subQuerieArr) {
@@ -2765,5 +2765,9 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 
 	public List<Dossier> findDossierByGroup(long groupId) {
 		return dossierPersistence.findByG(groupId);
+	}
+	
+	public int countByReferenceUid(String referenceUid) {
+		return dossierPersistence.countByReferenceUid(referenceUid);
 	}
 }

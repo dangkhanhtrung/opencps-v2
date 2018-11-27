@@ -346,8 +346,8 @@ public class BGTVT0600036 {
 						vtOfficialTransportPermit.setValidFrom(DateTimeUtils.convertDateToString(now, DateTimeUtils._NSW_DATE_TIME_FORMAT));												
 					}
 
-					if (formDataObj.has("ValidTo")) {
-						String validToStr = formDataObj.getString("ValidTo");
+					if (formDataObj.has("ValidUntil")) {
+						String validToStr = formDataObj.getString("ValidUntil");
 						Date validToDate = DateTimeUtils.convertStringToDate(validToStr);
 
 						vtOfficialTransportPermit.setValidUntil(

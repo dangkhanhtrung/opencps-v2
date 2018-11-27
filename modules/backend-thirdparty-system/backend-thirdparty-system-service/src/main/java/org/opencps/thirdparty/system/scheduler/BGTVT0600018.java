@@ -40,6 +40,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 
 public class BGTVT0600018 {
@@ -122,7 +123,7 @@ public class BGTVT0600018 {
 			for (String returnDossierFile : returnDossierFilesArr) {
 				if (templateNo.equals(returnDossierFile)) {
 					attachedFile = new AttachedFile();
-					attachedFile.setAttachedNote("");
+					//attachedFile.setAttachedNote("");
 					attachedFile.setAttachedTypeCode(templateNo);
 					attachedFile.setAttachedTypeName(partNo);
 					attachedFile.setFullFileName(dossierFile.getDisplayName());
@@ -146,26 +147,29 @@ public class BGTVT0600018 {
 					if (formDataObj.has("Tel")) {
 						resultOfExtending.setTel(formDataObj.getString("Tel"));						
 					}
-					if (formDataObj.has("Fax")) {
+					if (formDataObj.has("Fax") && Validator.isNotNull(formDataObj.getString("Fax"))) {
 						resultOfExtending.setFax(formDataObj.getString("Fax"));						
 					}
-					if (formDataObj.has("Email")) {
+					if (formDataObj.has("Email") && Validator.isNotNull(formDataObj.getString("Email"))) {
 						resultOfExtending.setEmail(formDataObj.getString("Email"));						
 					}
-					if (formDataObj.has("BizCertificationNo")) {
+					if (formDataObj.has("Website") && Validator.isNotNull(formDataObj.getString("Website"))) {
+						resultOfExtending.setWebsite(formDataObj.getString("Website"));						
+					}
+					if (formDataObj.has("BizCertificationNo") && Validator.isNotNull(formDataObj.getString("BizCertificationNo"))) {
 						resultOfExtending.setBizCertificationNo(formDataObj.getString("BizCertificationNo"));						
 					}
 					
-					if (formDataObj.has("BizCertificationDate")) {
+					if (formDataObj.has("BizCertificationDate") && Validator.isNotNull(formDataObj.getString("BizCertificationDate"))) {
 						String expiredDateStr = formDataObj.getString("BizCertificationDate");
 						Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
 						
 						resultOfExtending.setBizCertificationDate(DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
 					}
 					else {
-						resultOfExtending.setBizCertificationDate(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+						//resultOfExtending.setBizCertificationDate(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
 					}
-					if (formDataObj.has("BizCertificationIssuedBy")) {
+					if (formDataObj.has("BizCertificationIssuedBy") && Validator.isNotNull(formDataObj.getString("BizCertificationIssuedBy"))) {
 						resultOfExtending.setBizCertificationIssuedBy(formDataObj.getString("BizCertificationIssuedBy"));						
 					}
 					if (formDataObj.has("RegistrationNumber")) {
@@ -183,88 +187,81 @@ public class BGTVT0600018 {
 					if (formDataObj.has("LicenceNo")) {
 						resultOfExtending.setLicenceNo(formDataObj.getString("LicenceNo"));						
 					}	
-					if (formDataObj.has("ValidFrom")) {
+					if (formDataObj.has("ValidFrom") && Validator.isNotNull(formDataObj.getString("ValidFrom"))) {
 						String expiredDateStr = formDataObj.getString("ValidFrom");
 						Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
 						
 						resultOfExtending.setValidFrom(DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
 					}
 					else {
-						resultOfExtending.setValidFrom(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+						//resultOfExtending.setValidFrom(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
 					}
-					if (formDataObj.has("ValidUntil")) {
+					if (formDataObj.has("ValidUntil") && Validator.isNotNull(formDataObj.getString("ValidUntil"))) {
 						String expiredDateStr = formDataObj.getString("ValidUntil");
 						Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
 						
 						resultOfExtending.setValidUntil(DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
 					}
 					else {
-						resultOfExtending.setValidUntil(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+						//resultOfExtending.setValidUntil(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
 					}	
+					
 					if (formDataObj.has("Remarks")) {
 						resultOfExtending.setRemarks(formDataObj.getString("Remarks"));						
 					}	
 					
-					JSONObject typeOfExtendingObj = formDataObj.getJSONObject("TypeOfExtending");
+					//JSONObject typeOfExtendingObj = formDataObj.getJSONObject("TypeOfExtending");
+					String extend = "";
+					String extendFrom = "";
+					String extendUntil = "";
+					if (formDataObj.has("Extend")) {
+						extend = formDataObj.getString("Extend");
+					}
+					
+					if (formDataObj.has("ExtendFrom")) {
+						String expiredDateStr = formDataObj.getString("ExtendFrom");
+						Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
+						
+						extendFrom = DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT);						
+					}
+					else {
+						extendFrom = DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT);
+					}	
+					
+					if (formDataObj.has("ExtendUntil")) {
+						String expiredDateStr = formDataObj.getString("ExtendUntil");
+						Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
+						
+						extendUntil = DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT);						
+					}
+					else {
+						extendUntil = DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT);						
+					}
+					
 					TypeOfExtending typeOfExtending = new TypeOfExtending();
-					if (typeOfExtendingObj.has("TransportPermit")) {
-						typeOfExtending.setTransportPermit(typeOfExtendingObj.getString("TransportPermit"));
-					}
-					if (typeOfExtendingObj.has("Itinerary")) {
-						typeOfExtending.setItinerary(typeOfExtendingObj.getString("Itinerary"));
-					}
-					if (formDataObj.has("TransportPermitExtending")) {
+					if (formDataObj.has("TransportPermit") && formDataObj.getInt("TransportPermit") == 1) {
+						typeOfExtending.setTransportPermit(formDataObj.getString("TransportPermit"));
+						typeOfExtending.setItinerary("0");
+						
 						TransportPermitExtending tpe = new TransportPermitExtending();
-						JSONObject transportPermitExtendingObj = formDataObj.getJSONObject("TransportPermitExtending");
-						if (transportPermitExtendingObj.has("Extend")) {
-							tpe.setExtend(transportPermitExtendingObj.getString("Extend"));
-						}
-						if (transportPermitExtendingObj.has("ExtendFrom")) {
-							String expiredDateStr = formDataObj.getString("ExtendFrom");
-							Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
-							
-							tpe.setExtendFrom(DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
-						}
-						else {
-							tpe.setExtendFrom(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
-						}	
-						if (transportPermitExtendingObj.has("ExtendUntil")) {
-							String expiredDateStr = formDataObj.getString("ExtendUntil");
-							Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
-							
-							tpe.setExtendUntil(DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
-						}
-						else {
-							tpe.setExtendUntil(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
-						}
+						tpe.setExtend(extend);
+						tpe.setExtendFrom(extendFrom);
+						tpe.setExtendUntil(extendUntil);
 						resultOfExtending.setTransportPermitExtending(tpe);
 					}
-					if (formDataObj.has("ItineraryExtending")) {
+					
+					if (formDataObj.has("Itinerary") && formDataObj.getInt("Itinerary") == 1) {
+						typeOfExtending.setItinerary(formDataObj.getString("Itinerary"));
+						typeOfExtending.setTransportPermit("0");
+						
 						ItineraryExtending tpe = new ItineraryExtending();
-						JSONObject itineraryExtendingObj = formDataObj.getJSONObject("ItineraryExtending");
-						if (itineraryExtendingObj.has("Extend")) {
-							tpe.setExtend(itineraryExtendingObj.getString("Extend"));
-						}
-						if (itineraryExtendingObj.has("ExtendFrom")) {
-							String expiredDateStr = formDataObj.getString("ExtendFrom");
-							Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
-							
-							tpe.setExtendFrom(DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
-						}
-						else {
-							tpe.setExtendFrom(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
-						}	
-						if (itineraryExtendingObj.has("ExtendUntil")) {
-							String expiredDateStr = formDataObj.getString("ExtendUntil");
-							Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
-							
-							tpe.setExtendUntil(DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
-						}
-						else {
-							tpe.setExtendUntil(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
-						}
+						tpe.setExtend(extend);
+						tpe.setExtendFrom(extendFrom);
+						tpe.setExtendUntil(extendUntil);
 						resultOfExtending.setItineraryExtending(tpe);
 					}
+					resultOfExtending.setTypeOfExtending(typeOfExtending);
+					
 					IssuingAuthority issuingAuthority = new IssuingAuthority();
 					Date now = new Date();
 					
@@ -291,7 +288,7 @@ public class BGTVT0600018 {
 						issuingAuthority.setSignPlace("Hà Nội");
 						resultOfExtending.setSignIssuingAuthority("Hà Nội");
 					}
-					if (formDataObj.has("SignTitle")) {
+					if (formDataObj.has("SignTitle") && Validator.isNotNull(formDataObj.getString("SignTitle"))) {
 						issuingAuthority.setSignTitle(formDataObj.getString("SignTitle"));						
 					}
 					else {

@@ -9,6 +9,9 @@ import javax.xml.bind.Marshaller;
 import org.opencps.thirdparty.system.nsw.model.Envelope;
 import org.opencps.thirdparty.system.nsw.model.RequestPayload;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
 public class SOAPConverter {
 	public static String convertNSWRequest(RequestPayload request) {
 		JAXBContext context;
@@ -25,8 +28,7 @@ public class SOAPConverter {
 	        m.marshal(request, sw);
 	        xmlString = sw.toString();		
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			_log.error(e);
 		}
         return xmlString;
 	}
@@ -46,8 +48,7 @@ public class SOAPConverter {
 	        m.marshal(envelope, sw);
 	        xmlString = sw.toString();		
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			_log.error(e);
 		}
         return xmlString;
 	}
@@ -67,8 +68,7 @@ public class SOAPConverter {
 	        m.marshal(request, sw);
 	        xmlString = sw.toString();		
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			_log.error(e);
 		}
         return xmlString;
 	}
@@ -88,9 +88,10 @@ public class SOAPConverter {
 	        m.marshal(envelope, sw);
 	        xmlString = sw.toString();		
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			_log.error(e);
 		}
         return xmlString;
-	}	
+	}
+	
+	private static final Log _log = LogFactoryUtil.getLog(SOAPConverter.class);
 }

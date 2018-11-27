@@ -80,11 +80,18 @@ public class BackendInlandApiRestApplication extends Application {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response getInlandPrintTemplateDetail(@Context HttpServletRequest request, @Context HttpHeaders header,
 			@Context Company company, @Context Locale locale, @Context User user,
-			@Context ServiceContext serviceContext, @QueryParam("serviceCode") String serviceCode,
+			@Context ServiceContext serviceContext, 
+			@QueryParam("serviceCode") String serviceCode,
 			@QueryParam("dossierPartNo") String dossierPartNo,
 			@QueryParam("fileTemplateNo") String fileTemplateNo,
 			@QueryParam("templateNo") String templateNo,
-			@QueryParam("licenceType") String licenceType,@QueryParam("dossierFileId") String dossierFileId) {
+			@QueryParam("licenceType") String licenceType,
+			@QueryParam("dossierFileId") String dossierFileId,
+			@QueryParam("licenceNo") String licenceNo,
+			@QueryParam("validUntil") String validUntil,
+			@QueryParam("validFrom") String validFrom,
+			@QueryParam("signDate") String signDate,
+			@QueryParam("issuedDate") String issuedDate) {
 		
 		BackendAuth auth = new BackendAuthImpl();
 
@@ -152,7 +159,41 @@ public class BackendInlandApiRestApplication extends Application {
 			if(GetterUtil.getLong(dossierFileId) > 0) {
 				DossierFile dossierFile = DossierFileLocalServiceUtil.fetchDossierFile(GetterUtil.getLong(dossierFileId));
 				if(dossierFile != null) {
-					result.setFormData(dossierFile.getFormData());
+					
+					String formData = dossierFile.getFormData();
+					
+					if(Validator.isNotNull(licenceNo) 
+							|| Validator.isNotNull(validFrom)
+							|| Validator.isNotNull(validUntil)
+							|| Validator.isNotNull(signDate)) {
+						
+						JSONObject temp = JSONFactoryUtil.createJSONObject(dossierFile.getFormData());
+						
+						if(Validator.isNotNull(licenceNo) && temp.has("LicenceNo")) {
+							temp.put("LicenceNo", licenceNo);
+						}
+						
+						if(Validator.isNotNull(validFrom) && temp.has("ValidFrom")) {
+							temp.put("ValidFrom", validFrom);
+						}
+						
+						if(Validator.isNotNull(validUntil) && temp.has("ValidUntil")) {
+							temp.put("ValidUntil", validUntil);
+						}
+						
+						if(Validator.isNotNull(signDate) && temp.has("SignDate")) {
+							temp.put("SignDate", signDate);
+						}
+						
+						if(Validator.isNotNull(issuedDate) && temp.has("IssuedDate")) {
+							temp.put("IssuedDate", issuedDate);
+						}
+						
+						
+						formData = temp.toString();
+					}
+					
+					result.setFormData(formData);
 				}
 			}
 			
@@ -343,8 +384,8 @@ public class BackendInlandApiRestApplication extends Application {
 					
 					if(formDataObj != null) {
 						String licenceType = StringPool.BLANK;
-						if (formDataObj.has("licenceType")) {
-							licenceType = formDataObj.getString("licenceType");
+						if (formDataObj.has("LicenceType")) {
+							licenceType = formDataObj.getString("LicenceType");
 						}
 						else {
 							

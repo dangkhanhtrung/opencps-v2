@@ -428,6 +428,10 @@
 			<finder-column name="groupId" />
 			<finder-column name="dossierId" />
 		</finder>
+		
+		<finder return-type="Collection" name="ReferenceUid">
+			<finder-column name="referenceUid" />
+		</finder>
 
 		<!-- References -->
         <finder name="G_C_GAC_SC_DTNO_NOTDS" return-type="Collection">

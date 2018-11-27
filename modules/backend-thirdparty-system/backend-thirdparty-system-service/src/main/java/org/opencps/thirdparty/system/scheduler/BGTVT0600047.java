@@ -162,6 +162,17 @@ public class BGTVT0600047 {
 					else {
 						resultOfExtending.setBizCertificationDate(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
 					}
+					
+					if (formDataObj.has("BizCertificationExpiredDate")) {
+						String expiredDateStr = formDataObj.getString("BizCertificationExpiredDate");
+						Date expiredDate = DateTimeUtils.convertStringToDate(expiredDateStr);
+						
+						resultOfExtending.setBizCertificationExpiredDate(DateTimeUtils.convertDateToString(expiredDate, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+					}
+					else {
+						resultOfExtending.setBizCertificationExpiredDate(DateTimeUtils.convertDateToString(new Date(), DateTimeUtils._NSW_DATE_TIME_FORMAT));						
+					}
+					
 					if (formDataObj.has("BizCertificationIssuedBy")) {
 						resultOfExtending.setBizCertificationIssuedBy(formDataObj.getString("BizCertificationIssuedBy"));						
 					}
@@ -198,7 +209,7 @@ public class BGTVT0600047 {
 						issuingAuthority.setSignName(formDataObj.getString("SignName"));						
 					}
 					else {
-						issuingAuthority.setSignName("Nguyễn Tô An");						
+						issuingAuthority.setSignName("");						
 					}
 					if (formDataObj.has("SignDate")) {
 						String signDateStr = formDataObj.getString("SignDate");
@@ -210,16 +221,20 @@ public class BGTVT0600047 {
 						issuingAuthority.setSignDate(DateTimeUtils.convertDateToString(now, DateTimeUtils._NSW_DATE_TIME_FORMAT));						
 					}
 					if (formDataObj.has("SignPlace")) {
-						issuingAuthority.setSignPlace(formDataObj.getString("SignPlace"));						
+						issuingAuthority.setSignPlace(formDataObj.getString("SignPlace"));
 					}
 					else {
-						issuingAuthority.setSignPlace("Hà Nội");						
+						issuingAuthority.setSignPlace("Hà Nội");
 					}
 					if (formDataObj.has("SignTitle")) {
 						issuingAuthority.setSignTitle(formDataObj.getString("SignTitle"));						
 					}
 					else {
 						issuingAuthority.setSignTitle("Cục trưởng");												
+					}
+					
+					if (formDataObj.has("LicenceType")) {
+						resultOfExtending.setLicenceType(formDataObj.getString("LicenceType"));						
 					}
 					
 					resultOfExtending.setIssuingAuthority(issuingAuthority);

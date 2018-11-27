@@ -510,6 +510,8 @@ public class VRRestApplication extends Application {
 							
 							ilCertificate.setValidUntil(validUntil);
 							ilCertificate.setValidFrom(validFrom);
+							ilCertificate.setSignDate(new Date());
+							ilCertificate.setIssuedDate(new Date());
 							
 						} catch (Exception e) {
 							_log.info("__DateFormatFail****");

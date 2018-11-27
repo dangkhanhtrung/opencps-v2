@@ -5,6 +5,7 @@ import java.util.List;
 import org.opencps.communication.model.ServerConfig;
 import org.opencps.communication.service.ServerConfigLocalService;
 import org.opencps.dossiermgt.model.DossierSync;
+import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
 import org.opencps.thirdparty.system.constants.SyncServerTerm;
 import org.opencps.thirdparty.system.service.ThirdPartyDossierSyncLocalService;
 import org.osgi.service.component.annotations.Component;
@@ -32,7 +33,12 @@ public class DossierSyncListener extends BaseModelListener<DossierSync> {
 					if (configObj.has(SyncServerTerm.SERVER_TYPE) 
 							&& configObj.getString(SyncServerTerm.SERVER_TYPE).equals(SyncServerTerm.SOAP_SYNC_SERVER_TYPE)) {
 						if (model.getMethod() == 0) {
-							_thirdPartySyncService.updateThirdPartyDossierSync(model.getGroupId(), model.getUserId(), model.getDossierId(), model.getDossierReferenceUid(), model.getCreateDossier(), model.getMethod(), model.getClassPK(), model.getFileReferenceUid(), sc.getServerNo(), model.getDossierSyncId());							
+							
+							int count = DossierLocalServiceUtil.countByReferenceUid(model.getDossierReferenceUid());
+							
+							if(count == 1) {
+								_thirdPartySyncService.updateThirdPartyDossierSync(model.getGroupId(), model.getUserId(), model.getDossierId(), model.getDossierReferenceUid(), model.getCreateDossier(), model.getMethod(), model.getClassPK(), model.getFileReferenceUid(), sc.getServerNo(), model.getDossierSyncId());
+							}
 						}
 					}
 				}
