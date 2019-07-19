@@ -231,16 +231,31 @@ public class DossierMgtUtils {
 			
 			if (lastDA != null && lastDA.getSequenceNo().equals(ps.getSequenceNo())) {
 				for (DossierActionUser dau : lstDus) {
-					User u = UserLocalServiceUtil.fetchUser(dau.getUserId());
-					
-					if (!lstUsers.contains(dau.getUserId()) && dau.getModerator() == DossierActionUserTerm.ASSIGNED_TH) {
-						JSONObject assignUserObj = JSONFactoryUtil.createJSONObject();
-						lstUsers.add(dau.getUserId());
-						assignUserObj.put("userId", dau.getUserId());
-						assignUserObj.put("userName", u.getFullName());
+					if (dau.getRoleId() == 0) {
+						User u = UserLocalServiceUtil.fetchUser(dau.getUserId());
 						
-						assignUserArr.put(assignUserObj);					
-					}					
+						if (!lstUsers.contains(dau.getUserId()) && dau.getModerator() == DossierActionUserTerm.ASSIGNED_TH) {
+							JSONObject assignUserObj = JSONFactoryUtil.createJSONObject();
+							lstUsers.add(dau.getUserId());
+							assignUserObj.put("userId", dau.getUserId());
+							assignUserObj.put("userName", u.getFullName());
+							
+							assignUserArr.put(assignUserObj);					
+						}											
+					}
+					else {
+						Role role = RoleLocalServiceUtil.fetchRole(dau.getRoleId());
+						
+						if (!lstUsers.contains(dau.getRoleId()) && dau.getModerator() == DossierActionUserTerm.ASSIGNED_TH) {
+							JSONObject assignUserObj = JSONFactoryUtil.createJSONObject();
+							lstUsers.add(dau.getRoleId());
+							JobPos jp = JobPosLocalServiceUtil.fetchByF_mappingRoleId(groupId, role.getRoleId());
+							assignUserObj.put("userId", dau.getUserId());
+							assignUserObj.put("userName", jp.getTitle());
+							
+							assignUserArr.put(assignUserObj);					
+						}																	
+					}
 				}
 			}
 			for (DossierAction da : lstDossierActions) {

@@ -321,6 +321,7 @@ public class DossierActionUtils {
 			model = new DossierDetailNextActionModel();
 
 			ProcessAction processAction = (ProcessAction) jsonData.get("processAction");
+			_log.debug("List user: " + jsonData.get("lstUser"));
 			List<User> lstUser = (List<User>) jsonData.get("lstUser");
 //			_log.info("LAmTV_List user: "+lstUser);
 			JSONArray createFiles = jsonData.getJSONArray("createFiles");
@@ -416,14 +417,17 @@ public class DossierActionUtils {
 			
 			List<DossierActionNextActiontoUser> outputUsers = new ArrayList<DossierActionNextActiontoUser>();
 			DossierActionNextActiontoUser modelUser = null;
+			_log.debug("Next action user size: " + lstUser.size());
 			if (lstUser != null && lstUser.size() > 0) {
 				boolean moderator = false;
 				int assigned = 0;
 				for (User user: lstUser) {
 					long userId = user.getUserId();
 					Employee employee = EmployeeLocalServiceUtil.fetchByFB_MUID(userId);
+					_log.debug("User: " + user.getUserId());
 					_log.debug("employee1: "+employee);
 					if (employee != null && employee.getWorkingStatus() == 1) {
+						
 						modelUser = new DossierActionNextActiontoUser();
 						Map<String, Object> attr = user.getModelAttributes();
 	

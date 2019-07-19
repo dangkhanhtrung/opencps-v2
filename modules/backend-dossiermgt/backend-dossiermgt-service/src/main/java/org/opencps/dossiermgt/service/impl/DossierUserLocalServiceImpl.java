@@ -97,4 +97,50 @@ public class DossierUserLocalServiceImpl extends DossierUserLocalServiceBaseImpl
 	public DossierUser findByDID_UD(long dossierId, long userId) {
 		return dossierUserPersistence.fetchByDID_UID(dossierId, userId);
 	}
+	public DossierUser findByDID_RID(long dossierId, long roleId) {
+		return dossierUserPersistence.fetchByDID_RID(dossierId, roleId);
+	}
+	
+	public DossierUser addDossierUser(long groupId, long dossierId, long userId, long roleId, int moderator, boolean visited) {
+		DossierUser dossierUser = dossierUserPersistence.fetchByDID_UID(dossierId, userId);
+		if (dossierUser == null) {
+			DossierUserPK pk = new DossierUserPK();
+			if (roleId != 0) {
+				pk.setUserId(roleId);				
+			}
+			pk.setDossierId(dossierId);
+			
+			dossierUser = dossierUserPersistence.create(pk);
+			dossierUser.setDossierId(dossierId);
+			dossierUser.setRoleId(roleId);
+			if (roleId != 0) {
+				dossierUser.setUserId(roleId);
+			}
+		}
+
+		dossierUser.setModerator(moderator);
+		dossierUser.setVisited(visited);
+
+		return dossierUserPersistence.update(dossierUser);
+	}	
+	
+	public DossierUser updateDossierUser(long dossierId, long userId, long roleId, int moderator, boolean visited) throws NoSuchDossierUserException {
+		DossierUserPK pk = new DossierUserPK();
+		
+		if (roleId != 0) {
+			pk.setUserId(roleId);
+		}
+		pk.setDossierId(dossierId);
+		DossierUser object = dossierUserPersistence.fetchByPrimaryKey(pk);
+		
+		object.setModerator(moderator);
+		object.setVisited(visited);
+		object.setNew(false);
+		object.setRoleId(roleId);
+		if (roleId != 0) {
+			object.setUserId(roleId);
+		}
+		return dossierUserPersistence.update(object);
+	}	
+	
 }

@@ -218,4 +218,67 @@ public class DossierActionUserLocalServiceImpl
 		return dossierActionUserPersistence.update(dau);
 	}
 	
+	public DossierActionUser findByDID_RID(long dossierActionId, long roleId) {
+		return dossierActionUserPersistence.fetchByDID_RID(dossierActionId, roleId);
+	}
+	
+	public DossierActionUser addDossierActionUser(long userId, long groupId, 
+			long dossierActionId,
+			long dossierId, long roleId, String stepCode, int moderator, 
+			int assigned, boolean visited) throws PortalException {
+		DossierActionUser dau = dossierActionUserPersistence.fetchByDID_UID(dossierActionId, userId);
+		if (dau == null) {
+			dau = dossierActionUserPersistence.fetchByDID_RID(dossierActionId, roleId);
+		}
+		if (dau == null) {
+			DossierActionUserPK pk = new DossierActionUserPK(dossierActionId, userId);
+			if (roleId != 0) {
+				pk.setUserId(roleId);
+			}
+			dau = dossierActionUserPersistence.create(pk);
+			dau.setDossierActionId(dossierActionId);
+			if (roleId != 0) {
+				dau.setUserId(roleId);
+			}
+			dau.setRoleId(roleId);
+		}
+
+		dau.setAssigned(assigned);
+		dau.setStepCode(stepCode);
+		dau.setModerator(moderator);
+		dau.setVisited(visited);
+		dau.setDossierId(dossierId);
+
+		return dossierActionUserPersistence.update(dau);
+	}		
+
+	public DossierActionUser updateDossierActionUser(long userId, long groupId, 
+			long dossierActionId,
+			long dossierId, long roleId, String stepCode, int moderator, 
+			int assigned, boolean visited) throws PortalException {
+		DossierActionUser dau = dossierActionUserPersistence.fetchByDID_UID(dossierActionId, userId);
+		if (dau == null) {
+			dau = dossierActionUserPersistence.fetchByDID_RID(dossierActionId, roleId);
+		}
+		if (dau == null) {
+			DossierActionUserPK pk = new DossierActionUserPK(dossierActionId, userId);
+			if (roleId != 0) {
+				pk.setUserId(roleId);
+			}
+			dau = dossierActionUserPersistence.create(pk);
+			dau.setDossierActionId(dossierActionId);
+			if (roleId != 0) {
+				dau.setUserId(roleId);
+			}
+			dau.setRoleId(roleId);
+		}
+
+		dau.setAssigned(assigned);
+		dau.setStepCode(stepCode);
+		dau.setModerator(moderator);
+		dau.setVisited(visited);
+		dau.setDossierId(dossierId);
+
+		return dossierActionUserPersistence.update(dau);
+	}		
 }

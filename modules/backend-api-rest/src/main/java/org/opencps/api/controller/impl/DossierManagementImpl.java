@@ -170,8 +170,10 @@ import org.opencps.dossiermgt.service.StepConfigLocalServiceUtil;
 import org.opencps.dossiermgt.service.persistence.DossierActionUserPK;
 import org.opencps.usermgt.model.Applicant;
 import org.opencps.usermgt.model.Employee;
+import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.service.ApplicantLocalServiceUtil;
 import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
+import org.opencps.usermgt.service.JobPosLocalServiceUtil;
 
 import backend.auth.api.exception.BusinessExceptionImpl;
 import backend.auth.api.exception.ErrorMsgModel;
@@ -2575,22 +2577,37 @@ public class DossierManagementImpl implements DossierManagement {
 			
 			if (lastDA.getSequenceNo().equals(ps.getSequenceNo())) {
 				for (DossierActionUser dau : lstDus) {
-					User u = UserLocalServiceUtil.fetchUser(dau.getUserId());
-					if (u != null) {
-						if (!lstUsers.contains(dau.getUserId()) && dau.getModerator() == DossierActionUserTerm.ASSIGNED_TH) {
-							JSONObject assignUserObj = JSONFactoryUtil.createJSONObject();
-							lstUsers.add(dau.getUserId());
-							assignUserObj.put("userId", dau.getUserId());
-							//TODO: Not update user
-							Employee emp = EmployeeLocalServiceUtil.fetchByF_mappingUserId(groupId, u.getUserId());
-							if (emp != null) {
-								assignUserObj.put("userName", emp.getFullName());
-							} else {
-								assignUserObj.put("userName", u.getFullName());
+					if (dau.getRoleId() == 0) {
+						User u = UserLocalServiceUtil.fetchUser(dau.getUserId());
+						if (u != null) {
+							if (!lstUsers.contains(dau.getUserId()) && dau.getModerator() == DossierActionUserTerm.ASSIGNED_TH) {
+								JSONObject assignUserObj = JSONFactoryUtil.createJSONObject();
+								lstUsers.add(dau.getUserId());
+								assignUserObj.put("userId", dau.getUserId());
+								//TODO: Not update user
+								Employee emp = EmployeeLocalServiceUtil.fetchByF_mappingUserId(groupId, u.getUserId());
+								if (emp != null) {
+									assignUserObj.put("userName", emp.getFullName());
+								} else {
+									assignUserObj.put("userName", u.getFullName());
+								}
+								
+								assignUserArr.put(assignUserObj);
 							}
-							
-							assignUserArr.put(assignUserObj);
-						}
+						}						
+					}
+					else {
+						Role role = RoleLocalServiceUtil.fetchRole(dau.getRoleId());
+						if (role != null) {
+							if (!lstUsers.contains(dau.getRoleId()) && dau.getModerator() == DossierActionUserTerm.ASSIGNED_TH) {
+								JSONObject assignUserObj = JSONFactoryUtil.createJSONObject();
+								lstUsers.add(dau.getRoleId());
+								JobPos jp = JobPosLocalServiceUtil.fetchByF_mappingRoleId(groupId, role.getRoleId());
+								assignUserObj.put("userId", dau.getUserId());
+								assignUserObj.put("userName", jp.getTitle());
+								assignUserArr.put(assignUserObj);
+							}
+						}						
 					}
 				}
 			}

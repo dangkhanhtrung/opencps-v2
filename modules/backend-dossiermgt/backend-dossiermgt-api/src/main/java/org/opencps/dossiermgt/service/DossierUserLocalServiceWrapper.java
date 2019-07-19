@@ -53,6 +53,14 @@ public class DossierUserLocalServiceWrapper implements DossierUserLocalService,
 			userId, moderator, visited);
 	}
 
+	@Override
+	public org.opencps.dossiermgt.model.DossierUser addDossierUser(
+		long groupId, long dossierId, long userId, long roleId, int moderator,
+		boolean visited) {
+		return _dossierUserLocalService.addDossierUser(groupId, dossierId,
+			userId, roleId, moderator, visited);
+	}
+
 	/**
 	* Creates a new dossier user with the primary key. Does not add the dossier user to the database.
 	*
@@ -206,6 +214,12 @@ public class DossierUserLocalServiceWrapper implements DossierUserLocalService,
 	}
 
 	@Override
+	public org.opencps.dossiermgt.model.DossierUser findByDID_RID(
+		long dossierId, long roleId) {
+		return _dossierUserLocalService.findByDID_RID(dossierId, roleId);
+	}
+
+	@Override
 	public org.opencps.dossiermgt.model.DossierUser findByDID_UD(
 		long dossierId, long userId) {
 		return _dossierUserLocalService.findByDID_UD(dossierId, userId);
@@ -303,6 +317,14 @@ public class DossierUserLocalServiceWrapper implements DossierUserLocalService,
 		throws org.opencps.dossiermgt.exception.NoSuchDossierUserException {
 		return _dossierUserLocalService.updateDossierUser(dossierId, userId,
 			moderator, visited);
+	}
+
+	@Override
+	public org.opencps.dossiermgt.model.DossierUser updateDossierUser(
+		long dossierId, long userId, long roleId, int moderator, boolean visited)
+		throws org.opencps.dossiermgt.exception.NoSuchDossierUserException {
+		return _dossierUserLocalService.updateDossierUser(dossierId, userId,
+			roleId, moderator, visited);
 	}
 
 	@Override

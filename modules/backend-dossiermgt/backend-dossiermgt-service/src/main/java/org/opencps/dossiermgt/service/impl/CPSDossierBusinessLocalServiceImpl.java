@@ -29,7 +29,9 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
@@ -3255,6 +3257,31 @@ public class CPSDossierBusinessLocalServiceImpl
 		}
 	}
 
+	private void addDossierActionUserRoleByAssigned(int allowAssignUser, long roleId, long dossierActionId, int moderator,
+			boolean visited, String stepCode, long dossierId, int assigned, int delegacy) {
+		org.opencps.dossiermgt.model.DossierActionUser model = new org.opencps.dossiermgt.model.impl.DossierActionUserImpl();
+	
+		model.setVisited(visited);
+		model.setDossierId(dossierId);
+		model.setStepCode(stepCode);
+		model.setAssigned(assigned);
+		model.setDelegacy(delegacy);
+
+		DossierActionUserPK pk = new DossierActionUserPK(dossierActionId, roleId);
+			
+		org.opencps.dossiermgt.model.DossierActionUser dau = dossierActionUserLocalService.fetchDossierActionUser(pk);
+		model.setUserId(roleId);
+		model.setDossierActionId(dossierActionId);
+		model.setModerator(moderator);
+		model.setRoleId(roleId);
+		if (dau == null) {
+			dossierActionUserLocalService.addDossierActionUser(model);		
+		}
+		else {
+			dossierActionUserLocalService.updateDossierActionUser(model);					
+		}			
+	}
+	
 	public void initDossierActionUser(ProcessAction processAction, Dossier dossier, int allowAssignUser, DossierAction dossierAction, long userId, long groupId, long assignUserId)
 			throws PortalException {
 		// Delete record in dossierActionUser
@@ -3271,61 +3298,77 @@ public class CPSDossierBusinessLocalServiceImpl
 		ProcessStep processStep = processStepLocalService.fetchBySC_GID(stepCode, groupId, serviceProcessId);
 		
 		long processStepId = processStep.getProcessStepId();
-		int assigned = DossierActionUserTerm.NOT_ASSIGNED;
+		int assigned = DossierActionUserTerm.ASSIGNED_TH;
 		
 		// Get List ProcessStepRole
 		List<ProcessStepRole> listProcessStepRole = processStepRoleLocalService.findByP_S_ID(processStepId);
 		ProcessStepRole processStepRole = null;
 		List<DossierAction> lstStepActions = dossierActionLocalService.getByDID_FSC_NOT_DAI(dossier.getDossierId(), stepCode, dossierAction.getDossierActionId());
 		if (listProcessStepRole.size() != 0) {
-			for (int i = 0; i < listProcessStepRole.size(); i++) {
-				processStepRole = listProcessStepRole.get(i);
-				long roleId = processStepRole.getRoleId();
-				boolean moderator = processStepRole.getModerator();
-				int mod = 0;
-				if (moderator) {
-					mod = 1;
-				}
-				// Get list user
-				List<User> users = UserLocalServiceUtil.getRoleUsers(roleId);
-				for (User user : users) {
-					Employee employee = EmployeeLocalServiceUtil.fetchByFB_MUID(user.getUserId());
-					//_log.debug("Employee : " + employee);
-					if (employee != null && employee.getWorkingStatus() == 1) {
-						List<DossierAction> lstDoneActions = dossierActionLocalService
-								.getByDID_U_FSC(dossier.getDossierId(), user.getUserId(), stepCode);
-						if (!lstStepActions.isEmpty()) {
-							if (!lstDoneActions.isEmpty())
-								mod = 1;
-							else
-								mod = 0;
-						}
-						if (moderator) {
-							assigned = DossierActionUserTerm.ASSIGNED_TH;
-						}
-						else {
-							assigned = DossierActionUserTerm.NOT_ASSIGNED;
-						}
-						
-						updateDossierUser(dossier, processStepRole, user);
-						List<DossierActionUser> lstDau = dossierActionUserLocalService.getByDossierUserAndStepCode(dossier.getDossierId(), user.getUserId(), stepCode);
-						DossierActionUser lastDau = (lstDau.size() > 0 ? lstDau.get(0) : null);
-						for (DossierActionUser dau : lstDau) {
-							if (dau.getDossierActionId() > lastDau.getDossierActionId()) {
-								lastDau = dau;
+			if (OpenCPSConfigUtil.isPermissionRoleMode()) {
+				for (int i = 0; i < listProcessStepRole.size(); i++) {
+					processStepRole = listProcessStepRole.get(i);
+					long roleId = processStepRole.getRoleId();
+					boolean moderator = processStepRole.getModerator();
+					int mod = 0;
+					if (moderator) {
+						mod = 1;
+					}
+					
+					updateDossierUserRole(dossier, processStepRole, RoleLocalServiceUtil.fetchRole(roleId));
+					addDossierActionUserRoleByAssigned(allowAssignUser, roleId, dossier.getDossierActionId(), mod, false, stepCode, dossier.getDossierId(), assigned, 0);
+				}				
+			}
+			else {
+				for (int i = 0; i < listProcessStepRole.size(); i++) {
+					processStepRole = listProcessStepRole.get(i);
+					long roleId = processStepRole.getRoleId();
+					boolean moderator = processStepRole.getModerator();
+					int mod = 0;
+					if (moderator) {
+						mod = 1;
+					}
+					// Get list user
+					List<User> users = UserLocalServiceUtil.getRoleUsers(roleId);
+					for (User user : users) {
+						Employee employee = EmployeeLocalServiceUtil.fetchByFB_MUID(user.getUserId());
+						//_log.debug("Employee : " + employee);
+						if (employee != null && employee.getWorkingStatus() == 1) {
+							List<DossierAction> lstDoneActions = dossierActionLocalService
+									.getByDID_U_FSC(dossier.getDossierId(), user.getUserId(), stepCode);
+							if (!lstStepActions.isEmpty()) {
+								if (!lstDoneActions.isEmpty())
+									mod = 1;
+								else
+									mod = 0;
+							}
+							if (moderator) {
+								assigned = DossierActionUserTerm.ASSIGNED_TH;
+							}
+							else {
+								assigned = DossierActionUserTerm.NOT_ASSIGNED;
+							}
+							
+							updateDossierUser(dossier, processStepRole, user);
+							List<DossierActionUser> lstDau = dossierActionUserLocalService.getByDossierUserAndStepCode(dossier.getDossierId(), user.getUserId(), stepCode);
+							DossierActionUser lastDau = (lstDau.size() > 0 ? lstDau.get(0) : null);
+							for (DossierActionUser dau : lstDau) {
+								if (dau.getDossierActionId() > lastDau.getDossierActionId()) {
+									lastDau = dau;
+								}
+							}
+							
+							if (lastDau != null) {
+								addDossierActionUserByAssigned(processAction.getAllowAssignUser(), user.getUserId(),
+									dossierAction.getDossierActionId(), lastDau.getModerator(), false, stepCode, dossier.getDossierId(), lastDau.getAssigned(), lastDau.getDelegacy());	
+							}
+							else {
+								addDossierActionUserByAssigned(processAction.getAllowAssignUser(), user.getUserId(),
+										dossierAction.getDossierActionId(), mod, false, stepCode, dossier.getDossierId(), assigned, 0);							
 							}
 						}
-						
-						if (lastDau != null) {
-							addDossierActionUserByAssigned(processAction.getAllowAssignUser(), user.getUserId(),
-								dossierAction.getDossierActionId(), lastDau.getModerator(), false, stepCode, dossier.getDossierId(), lastDau.getAssigned(), lastDau.getDelegacy());	
-						}
-						else {
-							addDossierActionUserByAssigned(processAction.getAllowAssignUser(), user.getUserId(),
-									dossierAction.getDossierActionId(), mod, false, stepCode, dossier.getDossierId(), assigned, 0);							
-						}
 					}
-				}
+				}				
 			}
 		}
 		else {
@@ -3354,6 +3397,27 @@ public class CPSDossierBusinessLocalServiceImpl
 		}
 	}
 
+	private void updateDossierUserRole(Dossier dossier, ProcessStepRole processStepRole, Role role) {
+		DossierUserPK pk = new DossierUserPK();
+		pk.setDossierId(dossier.getDossierId());
+		pk.setUserId(role.getRoleId());
+		DossierUser du = dossierUserLocalService.fetchDossierUser(pk);
+		if (du == null) {
+			dossierUserLocalService.addDossierUser(dossier.getGroupId(), dossier.getDossierId(), 0, role.getRoleId(), processStepRole.getModerator() ? 1 : 0, true);
+		}
+		else {
+			try {
+				if ((processStepRole.getModerator() && du.getModerator() != DossierActionUserTerm.ASSIGNED_PH)
+						|| (!processStepRole.getModerator() && du.getModerator() != DossierActionUserTerm.ASSIGNED_PH)) {
+					dossierUserLocalService.updateDossierUser(dossier.getDossierId(), 0, role.getRoleId(), du.getModerator() == 0 ? (processStepRole.getModerator() ? 1 : 0) : 1, true);					
+				}
+			} catch (NoSuchDossierUserException e) {
+				_log.error(e);
+			}
+		}
+	}
+	
+	
 	private void initDossierActionUserByServiceProcessRole(Dossier dossier, int allowAssignUser, DossierAction dossierAction, long userId, long groupId, long assignUserId) {
 		try {
 			ServiceProcess serviceProcess = serviceProcessLocalService.getServiceByCode(groupId, dossier.getServiceCode(), dossier.getGovAgencyCode(), dossier.getDossierTemplateNo());

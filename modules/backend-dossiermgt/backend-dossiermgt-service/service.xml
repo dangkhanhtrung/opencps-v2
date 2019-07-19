@@ -1601,6 +1601,10 @@
 		<finder return-type="Collection" name = "UID">
 			<finder-column name="userId" />
 		</finder>
+		 <finder return-type="DossierUser" name = "DID_RID">
+			<finder-column name="dossierId" />
+			<finder-column name="roleId" />
+		</finder>		
 	</entity>
 
 	<entity local-service="true" name="DossierActionUser"
@@ -1664,7 +1668,11 @@
 			<finder-column name="dossierActionId"></finder-column>
 			<finder-column name="userId"></finder-column>
 			<finder-column name="stepCode"></finder-column>
-		</finder>		
+		</finder>	
+		<finder return-type="DossierActionUser" name = "DID_RID">
+			<finder-column name="dossierActionId" />
+			<finder-column name="roleId" />
+		</finder>			
 	</entity>
 
 	<entity local-service="true" name="DossierActionSync"

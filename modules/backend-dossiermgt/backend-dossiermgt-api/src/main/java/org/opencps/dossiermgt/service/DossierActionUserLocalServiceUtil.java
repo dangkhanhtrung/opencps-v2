@@ -56,6 +56,16 @@ public class DossierActionUserLocalServiceUtil {
 
 	public static org.opencps.dossiermgt.model.DossierActionUser addDossierActionUser(
 		long userId, long groupId, long dossierActionId, long dossierId,
+		long roleId, String stepCode, int moderator, int assigned,
+		boolean visited)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .addDossierActionUser(userId, groupId, dossierActionId,
+			dossierId, roleId, stepCode, moderator, assigned, visited);
+	}
+
+	public static org.opencps.dossiermgt.model.DossierActionUser addDossierActionUser(
+		long userId, long groupId, long dossierActionId, long dossierId,
 		String stepCode, int moderator, int assigned, boolean visited)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
@@ -229,6 +239,11 @@ public class DossierActionUserLocalServiceUtil {
 		return getService().fetchDossierActionUser(dossierActionUserPK);
 	}
 
+	public static org.opencps.dossiermgt.model.DossierActionUser findByDID_RID(
+		long dossierActionId, long roleId) {
+		return getService().findByDID_RID(dossierActionId, roleId);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return getService().getActionableDynamicQuery();
 	}
@@ -359,6 +374,16 @@ public class DossierActionUserLocalServiceUtil {
 	public static org.opencps.dossiermgt.model.DossierActionUser updateDossierActionUser(
 		org.opencps.dossiermgt.model.DossierActionUser dossierActionUser) {
 		return getService().updateDossierActionUser(dossierActionUser);
+	}
+
+	public static org.opencps.dossiermgt.model.DossierActionUser updateDossierActionUser(
+		long userId, long groupId, long dossierActionId, long dossierId,
+		long roleId, String stepCode, int moderator, int assigned,
+		boolean visited)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .updateDossierActionUser(userId, groupId, dossierActionId,
+			dossierId, roleId, stepCode, moderator, assigned, visited);
 	}
 
 	public static org.opencps.dossiermgt.model.DossierActionUser updateDossierActionUser(

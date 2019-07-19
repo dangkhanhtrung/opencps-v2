@@ -73,6 +73,10 @@ public interface DossierActionUserLocalService extends BaseLocalService,
 		DossierActionUser dossierActionUser);
 
 	public DossierActionUser addDossierActionUser(long userId, long groupId,
+		long dossierActionId, long dossierId, long roleId, String stepCode,
+		int moderator, int assigned, boolean visited) throws PortalException;
+
+	public DossierActionUser addDossierActionUser(long userId, long groupId,
 		long dossierActionId, long dossierId, String stepCode, int moderator,
 		int assigned, boolean visited) throws PortalException;
 
@@ -194,6 +198,8 @@ public interface DossierActionUserLocalService extends BaseLocalService,
 	public DossierActionUser fetchDossierActionUser(
 		DossierActionUserPK dossierActionUserPK);
 
+	public DossierActionUser findByDID_RID(long dossierActionId, long roleId);
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ActionableDynamicQuery getActionableDynamicQuery();
 
@@ -293,6 +299,10 @@ public interface DossierActionUserLocalService extends BaseLocalService,
 	@Indexable(type = IndexableType.REINDEX)
 	public DossierActionUser updateDossierActionUser(
 		DossierActionUser dossierActionUser);
+
+	public DossierActionUser updateDossierActionUser(long userId, long groupId,
+		long dossierActionId, long dossierId, long roleId, String stepCode,
+		int moderator, int assigned, boolean visited) throws PortalException;
 
 	public DossierActionUser updateDossierActionUser(long userId, long groupId,
 		long dossierActionId, long dossierId, String stepCode, int moderator,

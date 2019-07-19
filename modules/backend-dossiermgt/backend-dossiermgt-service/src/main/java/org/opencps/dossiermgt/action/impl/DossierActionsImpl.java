@@ -483,6 +483,16 @@ public class DossierActionsImpl implements DossierActions {
 						if (assign == 1 && !pending)
 							enable = 1;
 					}
+					else {
+						List<Role> lstRoles = RoleLocalServiceUtil.getUserRoles(userId);
+						for (Role r : lstRoles) {
+							DossierActionUser dau = DossierActionUserLocalServiceUtil.findByDID_RID(dossierActionId, r.getRoleId());
+							if (dau != null) {
+								enable = 1;
+								break;
+							}
+						}
+					}
 					//Check if user if admin
 					User checkAU = UserLocalServiceUtil.fetchUser(userId);
 //					_log.info("SONDT checkAU: " + JSONFactoryUtil.looseSerialize(checkAU));
@@ -3312,6 +3322,7 @@ private String _buildDossierNote(Dossier dossier, String actionNote, long groupI
 							user.setModelAttributes(assigned);
 
 							lstUser.add(user);
+							_log.debug("Add role user: " + user.getUserId());
 						}
 					}
 				}

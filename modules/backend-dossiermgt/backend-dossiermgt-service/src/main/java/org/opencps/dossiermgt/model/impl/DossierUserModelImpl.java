@@ -96,8 +96,9 @@ public class DossierUserModelImpl extends BaseModelImpl<DossierUser>
 				"value.object.column.bitmask.enabled.org.opencps.dossiermgt.model.DossierUser"),
 			true);
 	public static final long DOSSIERID_COLUMN_BITMASK = 1L;
-	public static final long USERID_COLUMN_BITMASK = 2L;
-	public static final long UUID_COLUMN_BITMASK = 4L;
+	public static final long ROLEID_COLUMN_BITMASK = 2L;
+	public static final long USERID_COLUMN_BITMASK = 4L;
+	public static final long UUID_COLUMN_BITMASK = 8L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(org.opencps.backend.dossiermgt.service.util.ServiceProps.get(
 				"lock.expiration.time.org.opencps.dossiermgt.model.DossierUser"));
 
@@ -306,7 +307,19 @@ public class DossierUserModelImpl extends BaseModelImpl<DossierUser>
 
 	@Override
 	public void setRoleId(long roleId) {
+		_columnBitmask |= ROLEID_COLUMN_BITMASK;
+
+		if (!_setOriginalRoleId) {
+			_setOriginalRoleId = true;
+
+			_originalRoleId = _roleId;
+		}
+
 		_roleId = roleId;
+	}
+
+	public long getOriginalRoleId() {
+		return _originalRoleId;
 	}
 
 	public long getColumnBitmask() {
@@ -396,6 +409,10 @@ public class DossierUserModelImpl extends BaseModelImpl<DossierUser>
 		dossierUserModelImpl._originalUserId = dossierUserModelImpl._userId;
 
 		dossierUserModelImpl._setOriginalUserId = false;
+
+		dossierUserModelImpl._originalRoleId = dossierUserModelImpl._roleId;
+
+		dossierUserModelImpl._setOriginalRoleId = false;
 
 		dossierUserModelImpl._columnBitmask = 0;
 	}
@@ -501,6 +518,8 @@ public class DossierUserModelImpl extends BaseModelImpl<DossierUser>
 	private int _moderator;
 	private boolean _visited;
 	private long _roleId;
+	private long _originalRoleId;
+	private boolean _setOriginalRoleId;
 	private long _columnBitmask;
 	private DossierUser _escapedModel;
 }

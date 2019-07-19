@@ -7,11 +7,15 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.BaseIndexer;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.IndexWriterHelperUtil;
 import com.liferay.portal.kernel.search.Summary;
+import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -20,8 +24,11 @@ import com.liferay.portal.kernel.util.Validator;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
@@ -530,32 +537,79 @@ public class DossierIndexer extends BaseIndexer<Dossier> {
 					int length = dossierUserList.size();
 					for (int i = 0; i < length; i++) {
 						DossierUser dau = dossierUserList.get(i);
-						long userId = dau.getUserId();
-						if (i == 0) {
-							sb.append(userId);
-							if (dau.getModerator() == 1) {
-								sbPermission.append(userId);
-								sbPermission.append(StringPool.UNDERLINE);
-								sbPermission.append("write");
+						if (dau.getRoleId() == 0) {
+							long userId = dau.getUserId();
+							if (i == 0) {
+								sb.append(userId);
+								if (dau.getModerator() == 1) {
+									sbPermission.append(userId);
+									sbPermission.append(StringPool.UNDERLINE);
+									sbPermission.append("write");
+								} else {
+									sbPermission.append(userId);
+									sbPermission.append(StringPool.UNDERLINE);
+									sbPermission.append("read");
+								}
 							} else {
-								sbPermission.append(userId);
-								sbPermission.append(StringPool.UNDERLINE);
-								sbPermission.append("read");
-							}
-						} else {
-							sb.append(StringPool.SPACE);
-							sb.append(userId);
-							sbPermission.append(StringPool.SPACE);
-							if (dau.getModerator() == 1) {
-								sbPermission.append(userId);
-								sbPermission.append(StringPool.UNDERLINE);
-								sbPermission.append("write");
-							} else {
-								sbPermission.append(userId);
-								sbPermission.append(StringPool.UNDERLINE);
-								sbPermission.append("read");
-							}
+								sb.append(StringPool.SPACE);
+								sb.append(userId);
+								sbPermission.append(StringPool.SPACE);
+								if (dau.getModerator() == 1) {
+									sbPermission.append(userId);
+									sbPermission.append(StringPool.UNDERLINE);
+									sbPermission.append("write");
+								} else {
+									sbPermission.append(userId);
+									sbPermission.append(StringPool.UNDERLINE);
+									sbPermission.append("read");
+								}
 
+							}							
+						}
+						else {
+							long roleId = dau.getRoleId();
+							List<Employee> lstEmps = EmployeeLocalServiceUtil.findByG(object.getGroupId());
+							Map<Long, Employee> mapEmps = new HashMap<>();
+							for (Employee e : lstEmps) {
+								if (e.getWorkingStatus() == 1) {
+									mapEmps.put(e.getMappingUserId(), e);								
+								}
+							}
+							Role role = RoleLocalServiceUtil.fetchRole(roleId);
+							if (role != null) {
+								List<User> users = UserLocalServiceUtil.getRoleUsers(role.getRoleId());
+								for (User u : users) {
+									if (!u.isLockout() && u.isActive()
+											&& mapEmps.containsKey(u.getUserId())) {
+										if ("".equals(sb.toString())) {
+											sb.append(u.getUserId());
+											if (dau.getModerator() == 1) {
+												sbPermission.append(u.getUserId());
+												sbPermission.append(StringPool.UNDERLINE);
+												sbPermission.append("write");
+											} else {
+												sbPermission.append(u.getUserId());
+												sbPermission.append(StringPool.UNDERLINE);
+												sbPermission.append("read");
+											}											
+										}
+										else {
+											sb.append(StringPool.SPACE);
+											sb.append(u.getUserId());
+											sbPermission.append(StringPool.SPACE);
+											if (dau.getModerator() == 1) {
+												sbPermission.append(u.getUserId());
+												sbPermission.append(StringPool.UNDERLINE);
+												sbPermission.append("write");
+											} else {
+												sbPermission.append(u.getUserId());
+												sbPermission.append(StringPool.UNDERLINE);
+												sbPermission.append("read");
+											}											
+										}
+									}
+								}
+							}
 						}
 					}
 				}

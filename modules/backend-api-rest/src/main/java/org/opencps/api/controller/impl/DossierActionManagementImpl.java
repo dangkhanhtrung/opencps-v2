@@ -7,10 +7,12 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.SortFactoryUtil;
+import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -18,6 +20,7 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -229,13 +232,38 @@ public class DossierActionManagementImpl implements DossierActionManagement {
 //							}
 //						}
 						List<DossierActionUser> assignedUsers = DossierActionUserLocalServiceUtil.getByDossierAndStepCode(dossierId, stepCode);
+						List<Long> lstIds = new ArrayList<>();
+						List<Employee> lstEmps = EmployeeLocalServiceUtil.findByG(groupId);
+						Map<Long, Employee> mapEmps = new HashMap<>();
+						for (Employee e : lstEmps) {
+							if (e.getWorkingStatus() == 1) {
+								mapEmps.put(e.getMappingUserId(), e);								
+							}
+						}
 						for (DossierActionUser dau : assignedUsers) {
 							if (dau.getAssigned() == DossierActionUserTerm.ASSIGNED_TH
 									&& dau.getModerator() == 1) {
-								User u = UserLocalServiceUtil.fetchUser(dau.getUserId());
-								if (u != null) {
-									if (!u.isLockout() && u.isActive()) {
-										lstUser.add(u);
+								if (dau.getRoleId() == 0) {
+									User u = UserLocalServiceUtil.fetchUser(dau.getUserId());
+									if (u != null) {
+										if (!u.isLockout() && u.isActive() && !lstIds.contains(u.getUserId())
+												&& mapEmps.containsKey(u.getUserId())) {
+											lstUser.add(u);
+											lstIds.add(u.getUserId());
+										}
+									}									
+								}
+								else {
+									Role role = RoleLocalServiceUtil.fetchRole(dau.getRoleId());
+									if (role != null) {
+										List<User> users = UserLocalServiceUtil.getRoleUsers(role.getRoleId());
+										for (User u : users) {
+											if (!u.isLockout() && u.isActive() && !lstIds.contains(u.getUserId())
+													&& mapEmps.containsKey(u.getUserId())) {
+												lstUser.add(u);
+												lstIds.add(u.getUserId());
+											}
+										}
 									}
 								}
 							}
@@ -355,7 +383,6 @@ public class DossierActionManagementImpl implements DossierActionManagement {
 
 			JSONObject jsonData = actions.getDetailNextActions(user.getUserId(), company.getCompanyId(), groupId, params,
 					sorts, query.getStart(), query.getEnd(), serviceContext);
-
 			DossierDetailNextActionModel result = DossierActionUtils.mappingToDetailNextActions(jsonData);
 			//Check if user is delegate user
 			Dossier dossier = DossierLocalServiceUtil.fetchDossier(dossierId);

@@ -49,6 +49,17 @@ public class DossierActionUserLocalServiceWrapper
 	@Override
 	public org.opencps.dossiermgt.model.DossierActionUser addDossierActionUser(
 		long userId, long groupId, long dossierActionId, long dossierId,
+		long roleId, String stepCode, int moderator, int assigned,
+		boolean visited)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _dossierActionUserLocalService.addDossierActionUser(userId,
+			groupId, dossierActionId, dossierId, roleId, stepCode, moderator,
+			assigned, visited);
+	}
+
+	@Override
+	public org.opencps.dossiermgt.model.DossierActionUser addDossierActionUser(
+		long userId, long groupId, long dossierActionId, long dossierId,
 		String stepCode, int moderator, int assigned, boolean visited)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _dossierActionUserLocalService.addDossierActionUser(userId,
@@ -240,6 +251,13 @@ public class DossierActionUserLocalServiceWrapper
 	}
 
 	@Override
+	public org.opencps.dossiermgt.model.DossierActionUser findByDID_RID(
+		long dossierActionId, long roleId) {
+		return _dossierActionUserLocalService.findByDID_RID(dossierActionId,
+			roleId);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return _dossierActionUserLocalService.getActionableDynamicQuery();
 	}
@@ -389,6 +407,17 @@ public class DossierActionUserLocalServiceWrapper
 	public org.opencps.dossiermgt.model.DossierActionUser updateDossierActionUser(
 		org.opencps.dossiermgt.model.DossierActionUser dossierActionUser) {
 		return _dossierActionUserLocalService.updateDossierActionUser(dossierActionUser);
+	}
+
+	@Override
+	public org.opencps.dossiermgt.model.DossierActionUser updateDossierActionUser(
+		long userId, long groupId, long dossierActionId, long dossierId,
+		long roleId, String stepCode, int moderator, int assigned,
+		boolean visited)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _dossierActionUserLocalService.updateDossierActionUser(userId,
+			groupId, dossierActionId, dossierId, roleId, stepCode, moderator,
+			assigned, visited);
 	}
 
 	@Override

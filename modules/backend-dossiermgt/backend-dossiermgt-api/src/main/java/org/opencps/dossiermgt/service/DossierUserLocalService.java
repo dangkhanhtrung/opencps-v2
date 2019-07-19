@@ -75,6 +75,9 @@ public interface DossierUserLocalService extends BaseLocalService,
 	public DossierUser addDossierUser(long groupId, long dossierId,
 		long userId, int moderator, boolean visited);
 
+	public DossierUser addDossierUser(long groupId, long dossierId,
+		long userId, long roleId, int moderator, boolean visited);
+
 	/**
 	* Creates a new dossier user with the primary key. Does not add the dossier user to the database.
 	*
@@ -178,6 +181,8 @@ public interface DossierUserLocalService extends BaseLocalService,
 
 	public List<DossierUser> findByDID(long dossierId);
 
+	public DossierUser findByDID_RID(long dossierId, long roleId);
+
 	public DossierUser findByDID_UD(long dossierId, long userId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -245,4 +250,8 @@ public interface DossierUserLocalService extends BaseLocalService,
 
 	public DossierUser updateDossierUser(long dossierId, long userId,
 		int moderator, boolean visited) throws NoSuchDossierUserException;
+
+	public DossierUser updateDossierUser(long dossierId, long userId,
+		long roleId, int moderator, boolean visited)
+		throws NoSuchDossierUserException;
 }
