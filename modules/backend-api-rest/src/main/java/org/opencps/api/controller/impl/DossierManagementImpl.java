@@ -170,8 +170,10 @@ import org.opencps.dossiermgt.service.StepConfigLocalServiceUtil;
 import org.opencps.dossiermgt.service.persistence.DossierActionUserPK;
 import org.opencps.usermgt.model.Applicant;
 import org.opencps.usermgt.model.Employee;
+import org.opencps.usermgt.model.EmployeeJobPos;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.service.ApplicantLocalServiceUtil;
+import org.opencps.usermgt.service.EmployeeJobPosLocalServiceUtil;
 import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 import org.opencps.usermgt.service.JobPosLocalServiceUtil;
 
@@ -2475,6 +2477,8 @@ public class DossierManagementImpl implements DossierManagement {
 		}
 	}
 
+	private static final int MAX_PERSON_SHOW = 10;
+	
 	@Override
 	public Response getDossierSequences(HttpServletRequest request, HttpHeaders header, Company company, Locale locale,
 			User user, ServiceContext serviceContext, String id) {
@@ -2600,12 +2604,38 @@ public class DossierManagementImpl implements DossierManagement {
 						Role role = RoleLocalServiceUtil.fetchRole(dau.getRoleId());
 						if (role != null) {
 							if (!lstUsers.contains(dau.getRoleId()) && dau.getModerator() == DossierActionUserTerm.ASSIGNED_TH) {
+								List<Employee> lstEmps = EmployeeLocalServiceUtil.findByG(groupId);
+								Map<Long, Employee> mapEmps = new HashMap<>();
+								for (Employee e : lstEmps) {
+									if (e.getWorkingStatus() == 1) {
+										mapEmps.put(e.getEmployeeId(), e);								
+									}
+								}
 								JSONObject assignUserObj = JSONFactoryUtil.createJSONObject();
 								lstUsers.add(dau.getRoleId());
 								JobPos jp = JobPosLocalServiceUtil.fetchByF_mappingRoleId(groupId, role.getRoleId());
-								assignUserObj.put("userId", dau.getUserId());
-								assignUserObj.put("userName", jp.getTitle());
-								assignUserArr.put(assignUserObj);
+								if (jp != null) {
+									List<EmployeeJobPos> lstJobs = EmployeeJobPosLocalServiceUtil.getByJobPostId(groupId, jp.getJobPosId());
+									List<Employee> lstTemps = new ArrayList<>();
+									for (EmployeeJobPos ejp : lstJobs) {
+										if (mapEmps.containsKey(ejp.getEmployeeId())) {
+											lstTemps.add(mapEmps.get(ejp.getEmployeeId()));
+										}
+									}
+									if (lstTemps.size() < MAX_PERSON_SHOW) {
+										for (Employee e : lstTemps) {
+											assignUserObj = JSONFactoryUtil.createJSONObject();
+											assignUserObj.put("userId", dau.getUserId());
+											assignUserObj.put("userName", e.getFullName());
+											assignUserArr.put(assignUserObj);												
+										}
+									}
+									else {
+										assignUserObj.put("userId", dau.getUserId());
+										assignUserObj.put("userName", jp.getTitle());
+										assignUserArr.put(assignUserObj);	
+									}
+								}
 							}
 						}						
 					}

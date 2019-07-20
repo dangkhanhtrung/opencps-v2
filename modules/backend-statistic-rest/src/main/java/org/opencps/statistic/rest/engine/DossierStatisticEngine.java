@@ -289,6 +289,7 @@ public class DossierStatisticEngine extends BaseMessageListener {
 //				}
 				//
 				StatisticSumYearService statisticSumYearService = new StatisticSumYearService();
+				statisticSumYearService.caculateSumYear(site.getCompanyId(), site.getGroupId(), lastYear);
 				
 				statisticSumYearService.caculateSumYear(site.getCompanyId(), site.getGroupId(), LocalDate.now().getYear());
 				//TODO: Calculator again last year
@@ -300,7 +301,6 @@ public class DossierStatisticEngine extends BaseMessageListener {
 //					
 //				}
 				//
-				statisticSumYearService.caculateSumYear(site.getCompanyId(), site.getGroupId(), lastYear);
 	
 			}
 	

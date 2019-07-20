@@ -19,8 +19,10 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.opencps.communication.model.ServerConfig;
 import org.opencps.communication.service.ServerConfigLocalServiceUtil;
@@ -47,7 +49,11 @@ import org.opencps.dossiermgt.service.ProcessOptionLocalServiceUtil;
 import org.opencps.dossiermgt.service.ProcessSequenceLocalServiceUtil;
 import org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil;
 import org.opencps.dossiermgt.service.ServiceProcessLocalServiceUtil;
+import org.opencps.usermgt.model.Employee;
+import org.opencps.usermgt.model.EmployeeJobPos;
 import org.opencps.usermgt.model.JobPos;
+import org.opencps.usermgt.service.EmployeeJobPosLocalServiceUtil;
+import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 import org.opencps.usermgt.service.JobPosLocalServiceUtil;
 
 import com.liferay.portal.kernel.exception.PortalException;
@@ -189,6 +195,8 @@ public class DossierMgtUtils {
 		return obj;
 	}
 	
+	private static final int MAX_PERSON_SHOW = 10;
+	
 	public static JSONObject getDossierProcessSequencesJSON(long groupId, Dossier dossier, ServiceProcess serviceProcess) {
 		JSONObject result = JSONFactoryUtil.createJSONObject();
 		List<ProcessSequence> lstSequences = ProcessSequenceLocalServiceUtil.getByServiceProcess(groupId, serviceProcess.getServiceProcessId());
@@ -247,13 +255,38 @@ public class DossierMgtUtils {
 						Role role = RoleLocalServiceUtil.fetchRole(dau.getRoleId());
 						
 						if (!lstUsers.contains(dau.getRoleId()) && dau.getModerator() == DossierActionUserTerm.ASSIGNED_TH) {
+							List<Employee> lstEmps = EmployeeLocalServiceUtil.findByG(groupId);
+							Map<Long, Employee> mapEmps = new HashMap<>();
+							for (Employee e : lstEmps) {
+								if (e.getWorkingStatus() == 1) {
+									mapEmps.put(e.getEmployeeId(), e);								
+								}
+							}
 							JSONObject assignUserObj = JSONFactoryUtil.createJSONObject();
 							lstUsers.add(dau.getRoleId());
 							JobPos jp = JobPosLocalServiceUtil.fetchByF_mappingRoleId(groupId, role.getRoleId());
-							assignUserObj.put("userId", dau.getUserId());
-							assignUserObj.put("userName", jp.getTitle());
-							
-							assignUserArr.put(assignUserObj);					
+							if (jp != null) {
+								List<EmployeeJobPos> lstJobs = EmployeeJobPosLocalServiceUtil.getByJobPostId(groupId, jp.getJobPosId());
+								List<Employee> lstTemps = new ArrayList<>();
+								for (EmployeeJobPos ejp : lstJobs) {
+									if (mapEmps.containsKey(ejp.getEmployeeId())) {
+										lstTemps.add(mapEmps.get(ejp.getEmployeeId()));
+									}
+								}
+								if (lstTemps.size() < MAX_PERSON_SHOW) {
+									for (Employee e : lstTemps) {
+										assignUserObj = JSONFactoryUtil.createJSONObject();
+										assignUserObj.put("userId", dau.getUserId());
+										assignUserObj.put("userName", e.getFullName());
+										assignUserArr.put(assignUserObj);												
+									}
+								}
+								else {
+									assignUserObj.put("userId", dau.getUserId());
+									assignUserObj.put("userName", jp.getTitle());
+									assignUserArr.put(assignUserObj);	
+								}
+							}
 						}																	
 					}
 				}
