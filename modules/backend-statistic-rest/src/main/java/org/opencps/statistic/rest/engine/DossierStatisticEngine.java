@@ -241,6 +241,8 @@ public class DossierStatisticEngine extends BaseMessageListener {
 					mapFlagPrev.put(lastMonth, flagLastYear);
 				}
 
+				StatisticEngineUpdate statisticEngineUpdate = new StatisticEngineUpdate();
+
 				for (int month = 1; month <= monthCurrent; month ++) {
 					if (mapFlagCurrent.get(month)) {
 //						try {
@@ -252,7 +254,6 @@ public class DossierStatisticEngine extends BaseMessageListener {
 						if (calculateDatas.get(yearCurrent) != null &&
 								calculateDatas.get(yearCurrent).get(month) != null) {
 //						if (calculateData.get(month) != null) {
-							StatisticEngineUpdate statisticEngineUpdate = new StatisticEngineUpdate();
 //							_log.debug("DOSSIER CAL MEMORY SIZE CURRENT: " + calculateDatas.get(yearCurrent).get(month).size());
 							statisticEngineUpdate.updateStatisticData(calculateDatas.get(yearCurrent).get(month));
 //							statisticEngineUpdate.updateStatisticData(calculateData.get(month));
@@ -260,7 +261,6 @@ public class DossierStatisticEngine extends BaseMessageListener {
 					}
 				}			
 				
-				StatisticEngineUpdate statisticEngineUpdate = new StatisticEngineUpdate();
 				for (int lastMonth = 1; lastMonth <= 12; lastMonth++) {
 					if (mapFlagPrev.get(lastMonth)) {
 //						try {
@@ -642,7 +642,7 @@ public class DossierStatisticEngine extends BaseMessageListener {
 	  @Modified
 	  protected void activate(Map<String,Object> properties) throws SchedulerException {
 		  String listenerClass = getClass().getName();
-		  Trigger jobTrigger = _triggerFactory.createTrigger(listenerClass, listenerClass, new Date(), null, 10, TimeUnit.MINUTE);
+		  Trigger jobTrigger = _triggerFactory.createTrigger(listenerClass, listenerClass, new Date(), null, 2, TimeUnit.MINUTE);
 
 		  _schedulerEntryImpl = new SchedulerEntryImpl(getClass().getName(), jobTrigger);
 		  _schedulerEntryImpl = new StorageTypeAwareSchedulerEntryImpl(_schedulerEntryImpl, StorageType.MEMORY_CLUSTERED);

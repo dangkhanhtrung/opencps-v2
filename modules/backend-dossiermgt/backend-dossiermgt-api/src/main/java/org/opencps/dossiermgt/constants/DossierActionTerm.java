@@ -37,4 +37,6 @@ public class DossierActionTerm {
 	
 	public static final String OUTSIDE_ACTION_9100 = "9100";
 	public static final String OUTSIDE_ACTION_ROLLBACK = "9000";
+	
+	public static final int MAX_PERSON_SHOW = 10;
 }

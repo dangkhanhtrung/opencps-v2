@@ -108,6 +108,7 @@ import org.opencps.dossiermgt.action.util.AutoFillFormData;
 import org.opencps.dossiermgt.action.util.DossierActionUtils;
 import org.opencps.dossiermgt.action.util.DossierMgtUtils;
 import org.opencps.dossiermgt.action.util.DossierNumberGenerator;
+import org.opencps.dossiermgt.action.util.OpenCPSConfigUtil;
 import org.opencps.dossiermgt.action.util.SpecialCharacterUtils;
 import org.opencps.dossiermgt.constants.ActionConfigTerm;
 import org.opencps.dossiermgt.constants.DossierActionTerm;
@@ -3422,35 +3423,41 @@ public class DossierManagementImpl implements DossierManagement {
 			}
 
 			if (dossier != null && dossier.getDossierActionId() != 0) {
-				JSONObject result = JSONFactoryUtil.createJSONObject();
 				DossierAction da = DossierActionLocalServiceUtil.fetchDossierAction(dossier.getDossierActionId());
 				ProcessStep ps = ProcessStepLocalServiceUtil.fetchBySC_GID(da.getStepCode(), groupId, da.getServiceProcessId());
 				
-				List<User> lstUsers = actions.getAssignUsersByStep(dossier, ps);
-				result.put("total", lstUsers.size());
-				JSONArray userArr = JSONFactoryUtil.createJSONArray();
-				
-				for (User u : lstUsers) {
-					JSONObject userObj = JSONFactoryUtil.createJSONObject();
-					userObj.put("userId", u.getUserId());
-					userObj.put("userName", u.getFullName());
-					DossierActionUserPK pk = new DossierActionUserPK();
-					pk.setDossierActionId(dossier.getDossierActionId());
-					pk.setUserId(u.getUserId());
-					DossierActionUser dau = DossierActionUserLocalServiceUtil.fetchDossierActionUser(pk);
-					if (dau != null) {
-						userObj.put("assigned", dau.getAssigned());
-					}
-					else {
-						userObj.put("assigned", 0);
+				if (OpenCPSConfigUtil.isPermissionRoleMode()) {
+					JSONObject result = actions.getAssignUsersByStepRole(dossier, ps);					
+					return Response.status(200).entity(result.toJSONString()).build();
+				}
+				else {
+					JSONObject result = JSONFactoryUtil.createJSONObject();
+					
+					List<User> lstUsers = actions.getAssignUsersByStep(dossier, ps);
+					result.put("total", lstUsers.size());
+					JSONArray userArr = JSONFactoryUtil.createJSONArray();
+					
+					for (User u : lstUsers) {
+						JSONObject userObj = JSONFactoryUtil.createJSONObject();
+						userObj.put("userId", u.getUserId());
+						userObj.put("userName", u.getFullName());
+						DossierActionUserPK pk = new DossierActionUserPK();
+						pk.setDossierActionId(dossier.getDossierActionId());
+						pk.setUserId(u.getUserId());
+						DossierActionUser dau = DossierActionUserLocalServiceUtil.fetchDossierActionUser(pk);
+						if (dau != null) {
+							userObj.put("assigned", dau.getAssigned());
+						}
+						else {
+							userObj.put("assigned", 0);
+						}
+						
+						userArr.put(userObj);
 					}
 					
-					userArr.put(userObj);
-				}
-				
-				result.put("data", userArr);
-				
-				return Response.status(200).entity(result.toJSONString()).build();
+					result.put("data", userArr);					
+					return Response.status(200).entity(result.toJSONString()).build();
+				}				
 			}
 			else {
 				return Response.status(200).entity(StringPool.BLANK).build();

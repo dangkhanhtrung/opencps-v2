@@ -101,6 +101,9 @@ import org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil;
 import org.opencps.dossiermgt.service.ServiceProcessLocalServiceUtil;
 import org.opencps.dossiermgt.service.ServiceProcessRoleLocalServiceUtil;
 import org.opencps.dossiermgt.service.comparator.DossierFileComparator;
+import org.opencps.dossiermgt.service.persistence.DossierActionUserPK;
+import org.opencps.usermgt.model.JobPos;
+import org.opencps.usermgt.service.JobPosLocalServiceUtil;
 import org.opencps.usermgt.service.util.OCPSUserUtils;
 
 import backend.auth.api.exception.ErrorMsgModel;
@@ -4016,6 +4019,121 @@ private String _buildDossierNote(Dossier dossier, String actionNote, long groupI
 		}
 
 		return dossier;
+	}
+	@Override
+	public JSONObject getAssignUsersByStepRole(Dossier dossier, ProcessStep ps) {
+		JSONObject result = JSONFactoryUtil.createJSONObject();
+		
+		List<User> lstUser = new ArrayList<>();
+		JSONArray userArr = JSONFactoryUtil.createJSONArray();
+		
+		if (ps != null) {
+
+			List<ProcessStepRole> processStepRoleList = ProcessStepRoleLocalServiceUtil
+					.findByP_S_ID(ps.getProcessStepId());
+			if (Validator.isNotNull(ps.getRoleAsStep())) {
+				String[] steps = StringUtil.split(ps.getRoleAsStep());
+				for (String stepCode : steps) {
+					if (stepCode.startsWith("!")) {
+						int index = stepCode.indexOf("!");
+						String stepCodePunc = stepCode.substring(index + 1);
+						lstUser.addAll(processRoleAsStepDonedListUser(dossier, stepCodePunc, ps.getServiceProcessId(), ps, processStepRoleList));
+					}
+					else {
+						lstUser.addAll(processRoleAsStepListUser(dossier, stepCode, ps.getServiceProcessId(), ps, processStepRoleList));								
+					}
+				}
+				for (User u : lstUser) {
+					JSONObject userObj = JSONFactoryUtil.createJSONObject();
+					userObj.put("userId", u.getUserId());
+					userObj.put("userName", u.getFullName());
+					DossierActionUserPK pk = new DossierActionUserPK();
+					pk.setDossierActionId(dossier.getDossierActionId());
+					pk.setUserId(u.getUserId());
+					DossierActionUser dau = DossierActionUserLocalServiceUtil.fetchDossierActionUser(pk);
+					if (dau != null) {
+						userObj.put("assigned", dau.getAssigned());
+					}
+					else {
+						userObj.put("assigned", 0);
+					}
+					
+					userArr.put(userObj);					
+				}
+			}
+			else {
+				if (processStepRoleList != null && !processStepRoleList.isEmpty()) {
+					List<ProcessStepRole> lstStepRoles = new ArrayList<>();
+					for (ProcessStepRole psr : processStepRoleList) {
+						if (Validator.isNotNull(psr.getCondition())) {
+							String[] conditions = StringUtil.split(psr.getCondition());
+
+							if (DossierMgtUtils.checkPreCondition(conditions, dossier)) {
+								lstStepRoles.add(psr);
+							}
+						}
+						else {
+							lstStepRoles.add(psr);
+						}
+					}
+					
+//					lstUser.addAll(processRoleListUser(lstStepRoles, ps.getServiceProcessId()));
+					for (ProcessStepRole psr : lstStepRoles) {
+						List<User> users = UserLocalServiceUtil.getRoleUsers(psr.getRoleId());
+						if (users != null && users.size() > 0 && users.size() < DossierActionTerm.MAX_PERSON_SHOW) {
+							HashMap<String, Object> assigned = new HashMap<>();
+							assigned.put(ProcessStepRoleTerm.ASSIGNED, 0);
+							
+							for (User user : users) {
+								if (!user.isLockout() && user.isActive()) {
+									JSONObject userObj = JSONFactoryUtil.createJSONObject();
+									userObj.put("userId", user.getUserId());
+									userObj.put("userName", user.getFullName());
+									DossierActionUserPK pk = new DossierActionUserPK();
+									pk.setDossierActionId(dossier.getDossierActionId());
+									pk.setUserId(user.getUserId());
+									DossierActionUser dau = DossierActionUserLocalServiceUtil.fetchDossierActionUser(pk);
+									if (dau != null) {
+										userObj.put("assigned", dau.getAssigned());
+									}
+									else {
+										userObj.put("assigned", 0);
+									}
+									
+									userArr.put(userObj);					
+								}
+							}
+						}
+						else {
+							Role role = RoleLocalServiceUtil.fetchRole(psr.getRoleId());
+							JobPos jp = JobPosLocalServiceUtil.fetchByF_mappingRoleId(dossier.getGroupId(), role.getRoleId());
+							JSONObject userObj = JSONFactoryUtil.createJSONObject();
+							userObj.put("userId", role.getRoleId());
+							userObj.put("userName", (jp != null ? jp.getTitle() : StringPool.BLANK));
+							DossierActionUserPK pk = new DossierActionUserPK();
+							pk.setDossierActionId(dossier.getDossierActionId());
+							pk.setUserId(role.getRoleId());
+							DossierActionUser dau = DossierActionUserLocalServiceUtil.fetchDossierActionUser(pk);
+							if (dau != null) {
+								userObj.put("assigned", dau.getAssigned());
+							}
+							else {
+								userObj.put("assigned", 0);
+							}
+							
+							userArr.put(userObj);												
+						}
+					}
+				}						
+			}
+		}
+
+		result.put("total", userArr.length());
+		
+		result.put("data", userArr);
+		
+		return result;
+	
 	}
 		
 }

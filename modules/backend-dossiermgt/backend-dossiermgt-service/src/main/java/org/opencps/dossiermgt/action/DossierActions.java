@@ -1,5 +1,12 @@
 package org.opencps.dossiermgt.action;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.service.ServiceContext;
+
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,13 +20,6 @@ import org.opencps.dossiermgt.model.ServiceInfo;
 import org.opencps.dossiermgt.model.ServiceProcess;
 
 import backend.auth.api.exception.ErrorMsgModel;
-
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.search.Sort;
-import com.liferay.portal.kernel.service.ServiceContext;
 
 public interface DossierActions {
 	public JSONObject getDossiers(long userId, long companyId, long groupId, LinkedHashMap<String, Object> params,
@@ -186,4 +186,5 @@ public interface DossierActions {
 			Boolean online, int originality, int sampleCount, Double durationCount, Integer durationUnit,
 			Date createDate, Date modifiedDate, Date submitDate, Date receiveDate, Date dueDate, Date releaseDate,
 			Date finishDate, String dossierTemplateNo, String dossierTemplateName, ServiceContext serviceContext);
+	public JSONObject getAssignUsersByStepRole(Dossier dossier, ProcessStep ps);	
 }
